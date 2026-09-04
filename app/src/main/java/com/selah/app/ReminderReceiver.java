@@ -43,7 +43,7 @@ public class ReminderReceiver extends BroadcastReceiver {
                 .setSound(android.net.Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.dove_chime));
         }
 
-        b.setSmallIcon(R.drawable.icon_192)
+        b.setSmallIcon(android.R.drawable.ic_dialog_info)
             .setContentTitle(line)
             .setContentText(text.length() > 160 ? text.substring(0, 160) : text)
             .setStyle(new android.app.Notification.BigTextStyle().bigText(text))
