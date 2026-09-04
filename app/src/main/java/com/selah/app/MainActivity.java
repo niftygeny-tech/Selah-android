@@ -16,15 +16,28 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import android.app.Activity;
+import android.speech.tts.TextToSpeech;
+import java.util.Locale;
 
 public class MainActivity extends Activity {
     private WebView webView;
+    private TextToSpeech textToSpeech;
+    private boolean ttsReady = false;
     private static final int REQUEST_NOTIFICATIONS = 42;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(makeWebView());
+
+        textToSpeech = new TextToSpeech(this, status -> {
+            if (status == TextToSpeech.SUCCESS) {
+                int result = textToSpeech.setLanguage(Locale.getDefault());
+                ttsReady = result != TextToSpeech.LANG_MISSING_DATA
+                        && result != TextToSpeech.LANG_NOT_SUPPORTED;
+            }
+        });
+
         NotificationHelper.createChannel(this);
     }
 
@@ -69,6 +82,27 @@ public class MainActivity extends Activity {
         public void cancelReminders() {
             ReminderScheduler.cancel(context);
         }
+
+        @JavascriptInterface
+        public void speak(String text) {
+            runOnUiThread(() -> {
+                if (textToSpeech == null || !ttsReady || text == null || text.trim().isEmpty()) {
+                    return;
+                }
+
+                textToSpeech.stop();
+                textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, "selah-read-aloud");
+            });
+        }
+
+        @JavascriptInterface
+        public void stopSpeaking() {
+            runOnUiThread(() -> {
+                if (textToSpeech != null) {
+                    textToSpeech.stop();
+                }
+            });
+        }
     }
 
     private void askForExactAlarmsIfNeeded() {
@@ -99,6 +133,16 @@ public class MainActivity extends Activity {
         if (requestCode == REQUEST_NOTIFICATIONS) {
             askForExactAlarmsIfNeeded();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (textToSpeech != null) {
+            textToSpeech.stop();
+            textToSpeech.shutdown();
+            textToSpeech = null;
+        }
+        super.onDestroy();
     }
 
     @Override

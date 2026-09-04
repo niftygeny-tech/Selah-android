@@ -384,38 +384,21 @@
     }, 500);
   });
 
-  // Preload the voice list early — on Android/Chrome, calling speak() before
-  // voices finish loading can fail silently on the first attempt.
-  let voicesCache = [];
-  function refreshVoices(){ try{ voicesCache = window.speechSynthesis.getVoices() || []; }catch(e){} }
-  if('speechSynthesis' in window){
-    refreshVoices();
-    window.speechSynthesis.onvoiceschanged = refreshVoices;
-  }
-
-  function getVoicesAsync(){
-    return new Promise((resolve) => {
-      try{
-        if(voicesCache.length){ resolve(voicesCache); return; }
-        let settled = false;
-        const finish = () => {
-          if(settled) return;
-          settled = true;
-          refreshVoices();
-          resolve(voicesCache);
-        };
-        window.speechSynthesis.addEventListener('voiceschanged', finish, { once: true });
-        setTimeout(finish, 600);
-      }catch(e){ resolve([]); }
-    });
-  }
-
+  // Read Aloud — use Android native Text-to-Speech when running in the app.
   let keepAliveTimer = null;
 
-  btnRead.onclick = async () => {
+  btnRead.onclick = () => {
     const text = anchorInput.value.trim();
     if(!text) return;
 
+    if(window.AndroidBridge && window.AndroidBridge.speak){
+      readStatus.textContent = '';
+      if(keepAliveTimer) clearInterval(keepAliveTimer);
+      window.AndroidBridge.speak(text);
+      return;
+    }
+
+    // Browser fallback for when index.html is opened directly.
     if(!('speechSynthesis' in window)){
       readStatus.textContent = "Voice playback isn't supported in this browser.";
       return;
@@ -424,42 +407,21 @@
     readStatus.textContent = '';
     if(keepAliveTimer) clearInterval(keepAliveTimer);
     window.speechSynthesis.cancel();
-    const voices = await getVoicesAsync();
 
-    function attempt(isRetry){
-      try{
-        const utter = new SpeechSynthesisUtterance(text);
-        utter.rate = 0.95;
-        if(voices.length) utter.voice = voices[0];
-
-        utter.onstart = () => { readStatus.textContent = ''; };
-        utter.onerror = () => {
-          readStatus.textContent = "Couldn't play that — tap Read it aloud to try again.";
-          if(keepAliveTimer) clearInterval(keepAliveTimer);
-        };
-        utter.onend = () => { if(keepAliveTimer) clearInterval(keepAliveTimer); };
-
-        // Known Android/Chrome bug: the speech engine can silently stop partway
-        // through longer text unless nudged. Pause+resume keeps it going.
-        keepAliveTimer = setInterval(() => {
-          if(!window.speechSynthesis.speaking){ clearInterval(keepAliveTimer); return; }
-          window.speechSynthesis.pause();
-          window.speechSynthesis.resume();
-        }, 4000);
-
-        window.speechSynthesis.speak(utter);
-
-        setTimeout(() => {
-          if(!window.speechSynthesis.speaking && !window.speechSynthesis.pending){
-            if(!isRetry){ attempt(true); return; }
-            readStatus.textContent = "No voice responded — check that a text-to-speech engine is turned on under your phone's Settings > Accessibility > Text-to-speech.";
-          }
-        }, 700);
-      }catch(e){
-        readStatus.textContent = "Couldn't play that on this device.";
-      }
+    try{
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.rate = 0.95;
+      utter.onerror = () => {
+        readStatus.textContent = "Couldn't play that — tap Read it aloud to try again.";
+        if(keepAliveTimer) clearInterval(keepAliveTimer);
+      };
+      utter.onend = () => {
+        if(keepAliveTimer) clearInterval(keepAliveTimer);
+      };
+      window.speechSynthesis.speak(utter);
+    }catch(e){
+      readStatus.textContent = "Couldn't play that on this device.";
     }
-    attempt(false);
   };
 
   // ---------- meditate ----------
