@@ -253,6 +253,14 @@
       </div>
     </div>
 
+    <div class="card" id="battery-help-card">
+      <span class="label">Make reminders more reliable</span>
+      <div style="margin-top:8px; line-height:1.5; opacity:.85;">
+        Some phones restrict apps in the background to save battery. If reminders don't arrive while Selah is closed, check Selah's battery settings.
+      </div>
+      <button class="btn btn-solid" id="btn-battery-settings" style="margin-top:12px;">Check battery settings</button>
+    </div>
+
     <div class="footnote">Selah reminders are scheduled at the phone level and can alert you even when the app isn't open.</div>
   </section>
 </div>
@@ -524,6 +532,17 @@
     "The Book won't depart. Will you?"
   ];
   const notifBanner = document.getElementById('notif-banner');
+
+const batterySettingsButton = document.getElementById('btn-battery-settings');
+if (batterySettingsButton) {
+  batterySettingsButton.onclick = () => {
+    if (window.AndroidBridge && window.AndroidBridge.openBatterySettings) {
+      window.AndroidBridge.openBatterySettings();
+    } else {
+      alert('Open Selah in the Android app to check battery settings.');
+    }
+  };
+}
 
   document.getElementById('btn-enable-notif').onclick = () => {
     if(window.AndroidBridge && window.AndroidBridge.requestNotifications){

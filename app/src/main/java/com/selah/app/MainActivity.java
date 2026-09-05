@@ -65,7 +65,7 @@ public class MainActivity extends Activity {
         public void requestNotifications() {
             runOnUiThread(() -> {
                 if (Build.VERSION.SDK_INT >= 33 &&
-                    checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                        checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
                     requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQUEST_NOTIFICATIONS);
                 } else {
                     askForExactAlarmsIfNeeded();
@@ -81,6 +81,11 @@ public class MainActivity extends Activity {
         @JavascriptInterface
         public void cancelReminders() {
             ReminderScheduler.cancel(context);
+        }
+
+        @JavascriptInterface
+        public void openBatterySettings() {
+            runOnUiThread(() -> MainActivity.this.openBatterySettings());
         }
 
         @JavascriptInterface
@@ -102,6 +107,18 @@ public class MainActivity extends Activity {
                     textToSpeech.stop();
                 }
             });
+        }
+    }
+
+    private void openBatterySettings() {
+        try {
+            Intent intent = new Intent(
+                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.parse("package:" + getPackageName())
+            );
+            startActivity(intent);
+        } catch (Exception ignored) {
+            // App settings are not available on this device.
         }
     }
 
