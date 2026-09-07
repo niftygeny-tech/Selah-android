@@ -137,7 +137,7 @@ public class MainActivity extends Activity {
             if (am != null && !am.canScheduleExactAlarms()) {
                 new AlertDialog.Builder(this)
                     .setTitle("Allow reliable reminders")
-                    .setMessage("Selah uses Android's exact alarm permission so your reminders can arrive at the time you choose, even when the app is closed.")
+                    .setMessage("One Eight uses Android's exact alarm permission so your reminders can arrive at the time you choose, even when the app is closed.")
                     .setPositiveButton("Open settings", (d, w) -> {
                         try {
                             startActivity(new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM,

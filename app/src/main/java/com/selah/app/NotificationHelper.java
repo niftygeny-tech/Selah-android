@@ -21,8 +21,8 @@ public final class NotificationHelper {
             .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
             .build();
         NotificationChannel channel = new NotificationChannel(
-            CHANNEL_ID, "Selah reminders", NotificationManager.IMPORTANCE_HIGH);
-        channel.setDescription("Scheduled Selah reminders");
+            CHANNEL_ID, "One Eight reminders", NotificationManager.IMPORTANCE_HIGH);
+        channel.setDescription("Scheduled One Eight reminders");
         channel.setSound(sound, attrs);
         channel.enableVibration(true);
         nm.createNotificationChannel(channel);

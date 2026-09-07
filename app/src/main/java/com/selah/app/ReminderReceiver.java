@@ -16,7 +16,7 @@ import org.json.JSONObject;
 
 public class ReminderReceiver extends BroadcastReceiver {
     private static final String[] LINES = {
-        "Selah. Your verse is waiting",
+        "One Eight. Your verse is waiting",
         "Mutter it once more",
         "Day or night — it hasn't left your mouth",
         "The Book won't depart. Will you?"

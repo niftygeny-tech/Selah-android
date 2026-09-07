@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-<title>Selah — say it, hear it, keep it</title>
+<title>One Eight — say it, hear it, keep it</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="favicon-32.png">
 <meta name="theme-color" content="#DDE4F4">
@@ -1775,7 +1775,7 @@
 <body>
 <div class="app">
   <header>
-    <div class="mark">Selah</div>
+    <div class="mark">One Eight</div>
     <div class="sub">say it, hear it, keep it in front of you</div>
     <div class="goal-row">
       <button class="goal-btn" id="goal-minus" aria-label="Lower daily goal">−</button>
@@ -1788,7 +1788,7 @@
     <div class="tab-indicator" aria-hidden="true"></div>
     <button id="tab-anchor" class="active">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5"/><path d="M6.5 9.5V20h11V9.5"/><path d="M10 20v-6h4v6"/></svg>
-      <span>Selah</span>
+      <span>One Eight</span>
     </button>
     <button id="tab-remind">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v5l3 1.8"/></svg>
@@ -1889,7 +1889,7 @@
   <section id="panel-remind" class="panel">
     <div class="card" id="notif-card">
       <div class="notif-banner" id="notif-banner">
-        <span>Enable notifications so Selah can send you reminders.</span>
+        <span>Enable notifications so One Eight can send you reminders.</span>
         <button id="btn-enable-notif">Enable</button>
       </div>
     </div>
@@ -1940,12 +1940,12 @@
         <span class="label">Keep reminders reliable</span>
       </div>
       <div class="battery-copy">
-        Some phones restrict background apps. If reminders don’t arrive, check Selah’s battery settings.
+        Some phones restrict background apps. If reminders don’t arrive, check One Eight’s battery settings.
       </div>
       <button class="btn btn-glass" id="btn-battery-settings">Check battery settings →</button>
     </div>
 
-    <div class="footnote">Selah reminders are scheduled at the phone level and can alert you even when the app isn't open.</div>
+    <div class="footnote">One Eight reminders are scheduled at the phone level and can alert you even when the app isn't open.</div>
   </section>
   </main>
 </div>
@@ -2500,7 +2500,7 @@
 
   // ---------- reminders ----------
   const NOTIFICATION_LINES = [
-    "Selah. Your verse is waiting",
+    "One Eight. Your verse is waiting",
     "Mutter it once more",
     "Day or night — it hasn't left your mouth",
     "The Book won't depart. Will you?"
@@ -2519,7 +2519,7 @@ if (batterySettingsButton) {
     if (window.AndroidBridge && window.AndroidBridge.openBatterySettings) {
       window.AndroidBridge.openBatterySettings();
     } else {
-      alert('Open Selah in the Android app to check battery settings.');
+      alert('Open One Eight in the Android app to check battery settings.');
     }
   };
 }
