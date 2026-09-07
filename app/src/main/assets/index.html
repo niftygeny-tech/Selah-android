@@ -1476,6 +1476,113 @@
     margin-top:8px;
   }
 
+
+  /* ---- Phase 3: Scripture Packs screen ---- */
+
+  .packs-entry-btn{
+    width:100%;
+    margin-top:12px;
+    min-height:44px;
+  }
+
+  .packs-screen{
+    display:none;
+    position:absolute;
+    inset:0;
+    z-index:20;
+    overflow:hidden;
+    background:
+      linear-gradient(
+        to bottom,
+        rgba(232,236,248,.98) 0%,
+        rgba(228,233,247,.96) 52%,
+        rgba(226,231,245,.88) 72%,
+        rgba(226,231,245,.42) 100%
+      ),
+      url('one-eight-packs-bible.png') center bottom / 100% auto no-repeat;
+  }
+
+  .packs-screen.active{
+    display:block;
+    animation:focusIn .28s ease;
+  }
+
+  .packs-screen-inner{
+    position:relative;
+    height:100%;
+    padding:8px 2px 0;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .packs-back-btn{
+    align-self:flex-start;
+    border:none;
+    min-height:38px;
+    padding:8px 13px;
+    border-radius:14px;
+    background:var(--surface);
+    color:#59618B;
+    font-family:'Sora',sans-serif;
+    font-size:.72rem;
+    font-weight:700;
+    cursor:pointer;
+    box-shadow:
+      4px 4px 9px rgba(75,87,132,.12),
+      -4px -4px 9px rgba(255,255,255,.72);
+  }
+
+  .packs-screen-head{
+    margin:18px 4px 14px;
+  }
+
+  .packs-screen-title{
+    font-family:'Fraunces',serif;
+    font-size:1.72rem;
+    font-weight:700;
+    color:var(--ink-strong);
+  }
+
+  .packs-screen-subtitle{
+    margin-top:5px;
+    max-width:310px;
+    font-size:.74rem;
+    line-height:1.45;
+    color:#70789A;
+  }
+
+  .packs-scroll{
+    flex:1;
+    min-height:0;
+    overflow-y:auto;
+    padding:2px 4px 185px;
+    scrollbar-width:none;
+  }
+
+  .packs-scroll::-webkit-scrollbar{
+    display:none;
+  }
+
+  .packs-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:11px;
+  }
+
+  @media (max-height:760px){
+    .packs-screen-head{
+      margin:12px 4px 10px;
+    }
+
+    .packs-screen-title{
+      font-size:1.48rem;
+    }
+
+    .packs-scroll{
+      padding-bottom:150px;
+    }
+  }
+
   @media (max-height:900px){
     .library-tabs{
       margin-bottom:10px;
@@ -1769,6 +1876,386 @@
     }
   }
 
+
+  /* ---- Scrollable One Eight main screen + fixed scenery ---- */
+
+  #normal-view{
+    overflow-y:auto !important;
+    overflow-x:hidden !important;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    padding-bottom:150px !important;
+    overscroll-behavior:contain;
+  }
+
+  #normal-view::-webkit-scrollbar{
+    display:none;
+  }
+
+  /* Keep mountain/lake artwork fixed to the panel, not the scrolling content. */
+  #panel-anchor::after{
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    pointer-events:none;
+    z-index:0;
+  }
+
+  /* Packs must overlay the scrolling main view. */
+  #panel-anchor > .packs-screen{
+    position:absolute !important;
+    inset:0;
+    z-index:30 !important;
+  }
+
+  #panel-anchor > #normal-view{
+    position:relative;
+    z-index:1;
+  }
+
+
+
+  /* ---- Background edge-fill fix ---- */
+
+  #panel-anchor::after,
+  #meditate-view::after{
+    left:-8px !important;
+    right:-8px !important;
+    width:auto !important;
+    background-size:calc(100% + 16px) auto !important;
+    background-position:center bottom !important;
+  }
+
+  .packs-screen{
+    background-size:auto, calc(100% + 16px) auto !important;
+    background-position:center top, center bottom !important;
+  }
+
+
+
+  /* ---- True full-bleed scenic backgrounds ---- */
+
+  /*
+     The app has 20px horizontal padding.
+     Allow scenic layers to extend through that padding while
+     .app itself still clips everything to the phone screen.
+  */
+  .panel-stage{
+    overflow:visible !important;
+  }
+
+  #panel-anchor{
+    overflow:visible !important;
+  }
+
+  #panel-anchor::after{
+    left:-20px !important;
+    right:-20px !important;
+    width:auto !important;
+    background-size:100% auto !important;
+    background-position:center bottom !important;
+  }
+
+  #meditate-view{
+    overflow:visible !important;
+  }
+
+  #meditate-view::after{
+    left:-20px !important;
+    right:-20px !important;
+    width:auto !important;
+    background-size:100% auto !important;
+    background-position:center bottom !important;
+  }
+
+  /*
+     Packs screen also extends through the app padding,
+     while its actual controls retain normal inner spacing.
+  */
+  #panel-anchor > .packs-screen{
+    left:-20px !important;
+    right:-20px !important;
+    width:auto !important;
+  }
+
+  .packs-screen-inner{
+    padding-left:22px !important;
+    padding-right:22px !important;
+  }
+
+  @media (max-width:360px){
+    #panel-anchor::after,
+    #meditate-view::after{
+      left:-15px !important;
+      right:-15px !important;
+    }
+
+    #panel-anchor > .packs-screen{
+      left:-15px !important;
+      right:-15px !important;
+    }
+
+    .packs-screen-inner{
+      padding-left:17px !important;
+      padding-right:17px !important;
+    }
+  }
+
+
+
+  /* ---- Page bottom notes ---- */
+
+  .page-bottom-note{
+    margin-top:24px;
+    padding-bottom:8px;
+    flex:0 0 auto;
+  }
+
+  #library-current .packs-entry-btn{
+    margin-top:18px;
+  }
+
+
+  #library-current.active{
+    display:flex;
+    flex-direction:column;
+    min-height:100%;
+  }
+
+  #library-current .page-bottom-note{
+    margin-top:auto;
+    padding-top:24px;
+  }
+
+  #library-saved,
+  #library-favorites{
+    min-height:100%;
+    flex-direction:column;
+  }
+
+  #library-saved.active,
+  #library-favorites.active{
+    display:flex;
+  }
+
+  #library-saved .page-bottom-note,
+  #library-favorites .page-bottom-note{
+    margin-top:auto;
+    padding-top:18px;
+  }
+
+  #panel-remind .footnote{
+    margin-top:auto;
+    padding-top:14px;
+    padding-bottom:6px;
+  }
+
+
+
+  /* ---- Scripture Pack cards ---- */
+
+  .pack-card{
+    border:none;
+    min-height:116px;
+    padding:15px 13px;
+    border-radius:20px;
+    text-align:left;
+    background:rgba(231,235,248,.90);
+    color:var(--ink-strong);
+    cursor:pointer;
+    box-shadow:
+      7px 7px 15px rgba(75,87,132,.13),
+      -7px -7px 15px rgba(255,255,255,.75),
+      inset 1px 1px 0 rgba(255,255,255,.52);
+    transition:transform .16s ease;
+  }
+
+  .pack-card:active{
+    transform:scale(.97);
+  }
+
+  .pack-icon{
+    display:block;
+    font-size:1.45rem;
+    margin-bottom:9px;
+  }
+
+  .pack-name{
+    display:block;
+    font-family:'Sora',sans-serif;
+    font-size:.82rem;
+    font-weight:700;
+    color:var(--ink-strong);
+  }
+
+  .pack-description{
+    display:block;
+    margin-top:5px;
+    font-size:.64rem;
+    line-height:1.4;
+    color:#71799B;
+  }
+
+
+
+  /* ---- Scripture Pack preview ---- */
+
+  .pack-preview{
+    display:none;
+    flex:1;
+    min-height:0;
+    flex-direction:column;
+    overflow:hidden;
+  }
+
+  .pack-preview.active{
+    display:flex;
+    animation:focusIn .25s ease;
+  }
+
+  .packs-screen.previewing .packs-screen-head,
+  .packs-screen.previewing .packs-scroll,
+  .packs-screen.previewing > .packs-screen-inner > #btn-close-packs{
+    display:none;
+  }
+
+  .pack-preview-head{
+    display:flex;
+    align-items:flex-start;
+    gap:13px;
+    margin:16px 2px 14px;
+  }
+
+  .pack-preview-icon{
+    flex:0 0 48px;
+    width:48px;
+    height:48px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:16px;
+    background:rgba(231,235,248,.92);
+    font-size:1.45rem;
+    box-shadow:
+      5px 5px 11px rgba(75,87,132,.12),
+      -5px -5px 11px rgba(255,255,255,.72);
+  }
+
+  .pack-preview-title{
+    font-family:'Fraunces',serif;
+    font-size:1.5rem;
+    font-weight:700;
+    color:var(--ink-strong);
+  }
+
+  .pack-preview-description{
+    margin-top:4px;
+    font-size:.72rem;
+    line-height:1.45;
+    color:#70789A;
+  }
+
+  .pack-preview-verses{
+    flex:1;
+    min-height:0;
+    overflow-y:auto;
+    padding:3px 2px 165px;
+    scrollbar-width:none;
+  }
+
+  .pack-preview-verses::-webkit-scrollbar{
+    display:none;
+  }
+
+  .pack-preview-placeholder{
+    padding:22px 16px;
+    border-radius:18px;
+    text-align:center;
+    font-size:.73rem;
+    line-height:1.5;
+    color:#727A9C;
+    background:rgba(231,235,248,.76);
+  }
+
+  .pack-import-btn{
+    position:absolute;
+    left:22px;
+    right:22px;
+    bottom:22px;
+    z-index:5;
+    min-height:52px;
+  }
+
+  @media (max-width:360px){
+    .pack-import-btn{
+      left:17px;
+      right:17px;
+    }
+  }
+
+
+
+  .packs-attribution{
+    margin:8px 4px 0;
+    padding-bottom:6px;
+    text-align:center;
+    font-size:.60rem;
+    line-height:1.4;
+    color:#7A82A1;
+  }
+
+
+
+  /* ---- Phase 3 layout polish ---- */
+
+  /* Saved/Favorites: let the whole One Eight page scroll.
+     Do not trap scrolling inside only the verse cards. */
+  #library-saved .library-list,
+  #library-favorites .library-list{
+    max-height:none !important;
+    overflow:visible !important;
+    flex:0 0 auto;
+  }
+
+  #library-saved,
+  #library-favorites{
+    min-height:0 !important;
+  }
+
+  #library-saved .page-bottom-note,
+  #library-favorites .page-bottom-note{
+    margin-top:20px !important;
+    padding-top:0 !important;
+    padding-bottom:18px;
+  }
+
+  /* Keep footer notes after all future page features rather than
+     pinning them far away at the bottom of an empty screen. */
+  #library-saved.active,
+  #library-favorites.active{
+    display:block !important;
+  }
+
+  /* Pack preview button: keep it inside the content width and
+     above the bottom edge instead of using an absolute overlay. */
+  .pack-import-btn{
+    position:relative !important;
+    left:auto !important;
+    right:auto !important;
+    bottom:auto !important;
+    width:100%;
+    flex:0 0 auto;
+    align-self:stretch;
+    margin:10px 0 14px;
+    min-height:54px;
+  }
+
+  .pack-preview-verses{
+    padding-bottom:20px !important;
+  }
+
+
 </style>
 
 </head>
@@ -1846,18 +2333,67 @@
         <button class="btn btn-glass btn-secondary" id="btn-read">🔊 Read it aloud</button>
       </div>
       <div class="status-line" id="read-status"></div>
-      <div class="stat-line">You’ll be reminded at your chosen times. Set them in <b>Reminders</b>.</div>
-      <div class="empty-space-note">“What you keep before you, shapes what you become.”</div>
+
+      <button class="btn btn-glass packs-entry-btn" id="btn-open-packs" type="button">
+        Scripture Packs
+      </button>
+
+      <div class="page-bottom-note">
+        <div class="stat-line">You’ll be reminded at your chosen times. Set them in <b>Reminders</b>.</div>
+        <div class="empty-space-note">“What you keep before you, shapes what you become.”</div>
+      </div>
       </div>
 
       <div class="library-view" id="library-saved">
         <div class="library-list" id="saved-verses-list"></div>
-        <div class="library-note">Saved verses stay on this device and can be made current anytime.</div>
+        <div class="library-note page-bottom-note">Saved verses stay on this device and can be made current anytime.</div>
       </div>
 
       <div class="library-view" id="library-favorites">
         <div class="library-list" id="favorite-verses-list"></div>
-        <div class="library-note">Favorite the verses you want to find quickly.</div>
+        <div class="library-note page-bottom-note">Favorite the verses you want to find quickly.</div>
+      </div>
+    </div>
+
+    <div class="packs-screen" id="packs-screen">
+      <div class="packs-screen-inner">
+        <button class="packs-back-btn" id="btn-close-packs" type="button">← Back</button>
+
+        <div class="packs-screen-head">
+          <div class="packs-screen-title">Scripture Packs</div>
+          <div class="packs-screen-subtitle">Choose a topic and add its verses to your library.</div>
+        </div>
+
+        <div class="packs-scroll" id="packs-scroll">
+          <div class="packs-grid" id="packs-grid"></div>
+        </div>
+
+        <div class="packs-attribution">
+          Built-in Scripture: World English Bible Updated (WEBU) — Public Domain
+        </div>
+
+
+        <div class="pack-preview" id="pack-preview">
+          <button class="packs-back-btn" id="btn-pack-preview-back" type="button">← Packs</button>
+
+          <div class="pack-preview-head">
+            <div class="pack-preview-icon" id="pack-preview-icon"></div>
+            <div>
+              <div class="pack-preview-title" id="pack-preview-title"></div>
+              <div class="pack-preview-description" id="pack-preview-description"></div>
+            </div>
+          </div>
+
+          <div class="pack-preview-verses" id="pack-preview-verses">
+            <div class="pack-preview-placeholder">
+              Verses for this pack will appear here.
+            </div>
+          </div>
+
+          <button class="btn btn-solid pack-import-btn" id="btn-import-pack" type="button">
+            Add pack to library
+          </button>
+        </div>
       </div>
     </div>
 
@@ -2135,6 +2671,407 @@
   const savedVersesList = document.getElementById('saved-verses-list');
   const favoriteVersesList = document.getElementById('favorite-verses-list');
   const saveCurrentBtn = document.getElementById('btn-save-current');
+
+  const openPacksBtn = document.getElementById('btn-open-packs');
+  const closePacksBtn = document.getElementById('btn-close-packs');
+  const packsScreen = document.getElementById('packs-screen');
+
+
+  const SCRIPTURE_PACKS = [
+    {
+      id:'faith',
+      icon:'✦',
+      name:'Faith',
+      description:'Trust God and stand firmly on His Word.',
+      verses:[
+        {
+          reference:'Hebrews 11:1',
+          text:`Now faith is assurance of things hoped for, proof of things not seen.`
+        },
+        {
+          reference:'Hebrews 11:6',
+          text:`Without faith it is impossible to be well pleasing to him, for he who comes to God must believe that he exists, and that he is a rewarder of those who seek him.`
+        },
+        {
+          reference:'Romans 10:17',
+          text:`So faith comes by hearing, and hearing by the word of God.`
+        },
+        {
+          reference:'2 Corinthians 5:7',
+          text:`For we walk by faith, not by sight.`
+        },
+        {
+          reference:'Mark 11:24',
+          text:`Therefore I tell you, all things whatever you pray and ask for, believe that you have received them, and you shall have them.`
+        }
+      ]
+    },
+    {
+      id:'peace',
+      icon:'☁',
+      name:'Peace',
+      description:'Scriptures for quietness, rest and confidence.',
+      verses:[
+        {
+          reference:'John 14:27',
+          text:`Peace I leave with you. My peace I give to you; not as the world gives, I give to you. Don’t let your heart be troubled, neither let it be fearful.`
+        },
+        {
+          reference:'Philippians 4:6-7',
+          text:`In nothing be anxious, but in everything, by prayer and petition with thanksgiving, let your requests be made known to God. And the peace of God, which surpasses all understanding, will guard your hearts and your thoughts in Christ Jesus.`
+        },
+        {
+          reference:'Isaiah 26:3',
+          text:`You will keep whoever’s mind is steadfast in perfect peace, because he trusts in you.`
+        },
+        {
+          reference:'Psalm 4:8',
+          text:`In peace I will both lay myself down and sleep, for you alone, LORD, make me live in safety.`
+        },
+        {
+          reference:'Colossians 3:15',
+          text:`And let the peace of God rule in your hearts, to which also you were called in one body, and be thankful.`
+        }
+      ]
+    },
+    {
+      id:'strength',
+      icon:'◆',
+      name:'Strength',
+      description:'Courage and strength for difficult moments.',
+      verses:[
+        {
+          reference:'Philippians 4:13',
+          text:`I can do all things through Christ, who strengthens me.`
+        },
+        {
+          reference:'Isaiah 41:10',
+          text:`Don’t you be afraid, for I am with you. Don’t be dismayed, for I am your God. I will strengthen you. Yes, I will help you. Yes, I will uphold you with the right hand of my righteousness.`
+        },
+        {
+          reference:'Psalm 46:1',
+          text:`God is our refuge and strength, a very present help in trouble.`
+        },
+        {
+          reference:'Joshua 1:9',
+          text:`Haven’t I commanded you? Be strong and courageous. Don’t be afraid. Don’t be dismayed, for the LORD your God is with you wherever you go.`
+        },
+        {
+          reference:'2 Timothy 1:7',
+          text:`For God didn’t give us a spirit of fear, but of power, love, and self-control.`
+        }
+      ]
+    },
+    {
+      id:'wisdom',
+      icon:'✧',
+      name:'Wisdom',
+      description:'Godly wisdom for everyday decisions.',
+      verses:[
+        {
+          reference:'James 1:5',
+          text:`But if any of you lacks wisdom, let him ask of God, who gives to all liberally and without reproach, and it will be given to him.`
+        },
+        {
+          reference:'Proverbs 3:5-6',
+          text:`Trust in the LORD with all your heart, and don’t lean on your own understanding. In all your ways acknowledge him, and he will make your paths straight.`
+        },
+        {
+          reference:'Proverbs 4:7',
+          text:`Wisdom is supreme. Get wisdom. Yes, though it costs all your possessions, get understanding.`
+        },
+        {
+          reference:'Proverbs 16:3',
+          text:`Commit your deeds to the LORD, and your plans shall succeed.`
+        },
+        {
+          reference:'Proverbs 2:6',
+          text:`For the LORD gives wisdom. Out of his mouth comes knowledge and understanding.`
+        }
+      ]
+    },
+    {
+      id:'healing',
+      icon:'♡',
+      name:'Healing',
+      description:'Meditate on God’s life, healing and restoration.',
+      verses:[
+        {
+          reference:'Psalm 103:2-3',
+          text:`Praise the LORD, my soul, and don’t forget all his benefits, who forgives all your sins, who heals all your diseases.`
+        },
+        {
+          reference:'Isaiah 53:5',
+          text:`But he was pierced for our transgressions. He was crushed for our iniquities. The punishment that brought our peace was on him; and by his wounds we are healed.`
+        },
+        {
+          reference:'Jeremiah 17:14',
+          text:`Heal me, LORD, and I will be healed. Save me, and I will be saved; for you are my praise.`
+        },
+        {
+          reference:'Proverbs 4:20-22',
+          text:`My son, attend to my words. Turn your ear to my sayings. Let them not depart from your eyes. Keep them in the center of your heart. For they are life to those who find them, and health to their whole body.`
+        },
+        {
+          reference:'Psalm 147:3',
+          text:`He heals the broken in heart, and binds up their wounds.`
+        }
+      ]
+    },
+    {
+      id:'identity',
+      icon:'◎',
+      name:'Identity in Christ',
+      description:'Remember who you are in Christ.',
+      verses:[
+        {
+          reference:'2 Corinthians 5:17',
+          text:`Therefore if anyone is in Christ, he is a new creation. The old things have passed away. Behold, all things have become new.`
+        },
+        {
+          reference:'Galatians 2:20',
+          text:`I have been crucified with Christ, and it is no longer I who live, but Christ lives in me. That life which I now live in the flesh, I live by faith in the Son of God, who loved me and gave himself up for me.`
+        },
+        {
+          reference:'Colossians 3:3',
+          text:`For you died, and your life is hidden with Christ in God.`
+        },
+        {
+          reference:'1 Corinthians 6:17',
+          text:`But he who is joined to the Lord is one spirit.`
+        },
+        {
+          reference:'Ephesians 2:10',
+          text:`For we are his workmanship, created in Christ Jesus for good works, which God prepared before that we would walk in them.`
+        }
+      ]
+    },
+    {
+      id:'prayer',
+      icon:'◇',
+      name:'Prayer',
+      description:'Verses that strengthen your prayer life.',
+      verses:[
+        {
+          reference:'Jeremiah 33:3',
+          text:`Call to me, and I will answer you, and will show you great and difficult things, which you don’t know.`
+        },
+        {
+          reference:'Matthew 7:7',
+          text:`Ask, and it will be given you. Seek, and you will find. Knock, and it will be opened for you.`
+        },
+        {
+          reference:'Philippians 4:6',
+          text:`In nothing be anxious, but in everything, by prayer and petition with thanksgiving, let your requests be made known to God.`
+        },
+        {
+          reference:'1 Thessalonians 5:17',
+          text:`Pray without ceasing.`
+        },
+        {
+          reference:'Mark 11:24',
+          text:`Therefore I tell you, all things whatever you pray and ask for, believe that you have received them, and you shall have them.`
+        }
+      ]
+    },
+    {
+      id:'love',
+      icon:'♥',
+      name:'Love',
+      description:'Walk in God’s love toward Him and others.',
+      verses:[
+        {
+          reference:'1 Corinthians 13:4-5',
+          text:`Love is patient and is kind. Love doesn’t envy. Love doesn’t brag, is not proud, doesn’t behave itself inappropriately, doesn’t seek its own way, is not provoked, takes no account of evil.`
+        },
+        {
+          reference:'1 John 4:8',
+          text:`He who doesn’t love doesn’t know God, for God is love.`
+        },
+        {
+          reference:'John 13:34',
+          text:`A new commandment I give to you, that you love one another. Just as I have loved you, you also love one another.`
+        },
+        {
+          reference:'Colossians 3:14',
+          text:`Above all these things, walk in love, which is the bond of perfection.`
+        },
+        {
+          reference:'1 Peter 4:8',
+          text:`And above all things be earnest in your love among yourselves, for love covers a multitude of sins.`
+        }
+      ]
+    },
+    {
+      id:'prosperity',
+      icon:'↗',
+      name:'Prosperity',
+      description:'Biblical meditation on fruitfulness and success.',
+      verses:[
+        {
+          reference:'Joshua 1:8',
+          text:`This book of the law shall not depart out of your mouth, but you shall meditate on it day and night, that you may observe to do according to all that is written in it; for then you shall make your way prosperous, and then you shall have good success.`
+        },
+        {
+          reference:'Psalm 1:2-3',
+          text:`But his delight is in the LORD’s law. On his law he meditates day and night. He will be like a tree planted by the streams of water, that produces its fruit in its season, whose leaf also does not wither. Whatever he does shall prosper.`
+        },
+        {
+          reference:'Deuteronomy 8:18',
+          text:`But you shall remember the LORD your God, for it is he who gives you power to get wealth, that he may establish his covenant which he swore to your fathers, as it is today.`
+        },
+        {
+          reference:'Proverbs 10:22',
+          text:`The LORD’s blessing brings wealth, and he adds no trouble to it.`
+        },
+        {
+          reference:'3 John 1:2',
+          text:`Beloved, I pray that you may prosper in all things and be healthy, even as your soul prospers.`
+        }
+      ]
+    }
+  ];
+
+  function renderScripturePacks(){
+    const grid = document.getElementById('packs-grid');
+    if(!grid) return;
+
+    grid.innerHTML = SCRIPTURE_PACKS.map(pack => `
+      <button class="pack-card" type="button" data-pack="${pack.id}">
+        <span class="pack-icon">${pack.icon}</span>
+        <span class="pack-name">${pack.name}</span>
+        <span class="pack-description">${pack.description}</span>
+      </button>
+    `).join('');
+  }
+
+  renderScripturePacks();
+
+  const packPreview = document.getElementById('pack-preview');
+  const packPreviewBack = document.getElementById('btn-pack-preview-back');
+  const packPreviewIcon = document.getElementById('pack-preview-icon');
+  const packPreviewTitle = document.getElementById('pack-preview-title');
+  const packPreviewDescription = document.getElementById('pack-preview-description');
+
+  const packPreviewVerses = document.getElementById('pack-preview-verses');
+  const importPackBtn = document.getElementById('btn-import-pack');
+  let selectedPackId = null;
+
+  function renderPackVerses(pack){
+    if(!packPreviewVerses) return;
+
+    if(!pack.verses || pack.verses.length === 0){
+      packPreviewVerses.innerHTML = `
+        <div class="pack-preview-placeholder">
+          Verses for this pack will appear here.
+        </div>
+      `;
+      return;
+    }
+
+    packPreviewVerses.innerHTML = pack.verses.map(verse => `
+      <div class="verse-card">
+        <div class="verse-card-text">${verse.text}</div>
+        <div class="verse-card-ref">${verse.reference}</div>
+      </div>
+    `).join('');
+  }
+
+  function openPackPreview(packId){
+    const pack = SCRIPTURE_PACKS.find(item => item.id === packId);
+    if(!pack || !packPreview) return;
+
+    selectedPackId = pack.id;
+
+    if(packPreviewIcon) packPreviewIcon.textContent = pack.icon;
+    if(packPreviewTitle) packPreviewTitle.textContent = pack.name;
+    if(packPreviewDescription) packPreviewDescription.textContent = pack.description;
+
+    renderPackVerses(pack);
+
+    packsScreen.classList.add('previewing');
+    packPreview.classList.add('active');
+  }
+
+  function closePackPreview(){
+    if(!packPreview) return;
+    packPreview.classList.remove('active');
+    packsScreen.classList.remove('previewing');
+  }
+
+  document.getElementById('packs-grid')?.addEventListener('click', event => {
+    const card = event.target.closest('.pack-card');
+    if(!card) return;
+    openPackPreview(card.dataset.pack);
+  });
+
+  if(packPreviewBack){
+    packPreviewBack.onclick = closePackPreview;
+  }
+
+
+  if(importPackBtn){
+    importPackBtn.onclick = async () => {
+      const pack = SCRIPTURE_PACKS.find(item => item.id === selectedPackId);
+      if(!pack || !pack.verses || pack.verses.length === 0) return;
+
+      const library = await getScriptureLibrary();
+      let added = 0;
+
+      for(const verse of pack.verses){
+        const duplicate = library.some(item =>
+          (item.text || '').trim() === verse.text.trim() &&
+          (item.reference || '').trim() === verse.reference.trim()
+        );
+
+        if(duplicate) continue;
+
+        library.push({
+          id: Date.now().toString(36) + Math.random().toString(36).slice(2),
+          text: verse.text,
+          reference: verse.reference,
+          favorite: false,
+          createdAt: Date.now(),
+          pack: pack.id,
+          category: pack.name,
+          source: 'preloaded'
+        });
+
+        added++;
+      }
+
+      if(added > 0){
+        await saveScriptureLibrary(library);
+        importPackBtn.textContent = added === 1
+          ? '1 verse added'
+          : `${added} verses added`;
+      }else{
+        importPackBtn.textContent = 'Already in library';
+      }
+
+      setTimeout(() => {
+        importPackBtn.textContent = 'Add pack to library';
+      }, 1800);
+    };
+  }
+
+  function openPacksScreen(){
+    if(!packsScreen) return;
+    packsScreen.classList.add('active');
+  }
+
+  function closePacksScreen(){
+    if(!packsScreen) return;
+    packsScreen.classList.remove('active');
+  }
+
+  if(openPacksBtn){
+    openPacksBtn.onclick = openPacksScreen;
+  }
+
+  if(closePacksBtn){
+    closePacksBtn.onclick = closePacksScreen;
+  }
 
   function switchLibraryTab(which){
     Object.keys(libraryTabs).forEach(key => {
