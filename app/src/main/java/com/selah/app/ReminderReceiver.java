@@ -10,6 +10,10 @@ import android.text.TextUtils;
 
 import java.util.Random;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+
 public class ReminderReceiver extends BroadcastReceiver {
     private static final String[] LINES = {
         "Selah. Your verse is waiting",
@@ -25,6 +29,36 @@ public class ReminderReceiver extends BroadcastReceiver {
         android.content.SharedPreferences p =
             context.getSharedPreferences("selah_reminders", Context.MODE_PRIVATE);
         String text = p.getString("text", "");
+
+        String rotationMode = p.getString("rotation_mode", "current");
+
+        if ("rotate".equals(rotationMode)) {
+            try {
+                String libraryJson = p.getString("rotation_library", "[]");
+                JSONArray library = new JSONArray(libraryJson);
+
+                if (library.length() > 0) {
+                    int index = p.getInt("rotation_index", 0);
+
+                    if (index < 0 || index >= library.length()) {
+                        index = 0;
+                    }
+
+                    JSONObject item = library.getJSONObject(index);
+                    String rotatedText = item.optString("text", "").trim();
+
+                    if (!TextUtils.isEmpty(rotatedText)) {
+                        text = rotatedText;
+
+                        int nextIndex = (index + 1) % library.length();
+                        p.edit().putInt("rotation_index", nextIndex).apply();
+                    }
+                }
+            } catch (Exception ignored) {
+                // Fall back to the current verse if saved rotation data is invalid.
+            }
+        }
+
         if (TextUtils.isEmpty(text)) return;
 
         Intent open = new Intent(context, MainActivity.class);

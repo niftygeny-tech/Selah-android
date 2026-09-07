@@ -767,7 +767,64 @@
       border-radius:15px;
       font-size:.73rem;
     }
-    #panel-remind .time-row{ gap:10px; margin-top:0; }
+    #panel-remind .verse-source{
+    margin-top:12px;
+    padding-top:11px;
+    border-top:1px solid rgba(112,122,165,.12);
+  }
+
+  #panel-remind .verse-source-label{
+    display:block;
+    margin-bottom:7px;
+    font-size:.68rem;
+    font-weight:700;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:#5b648f;
+  }
+
+  #panel-remind .verse-source-options{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:7px;
+  }
+
+  #panel-remind .verse-source-chip{
+    border:none;
+    min-height:38px;
+    padding:8px 9px;
+    border-radius:13px;
+    background:var(--surface);
+    color:#59618b;
+    font:600 .68rem 'IBM Plex Mono',monospace;
+    cursor:pointer;
+    box-shadow:
+      4px 4px 9px rgba(75,87,132,.12),
+      -4px -4px 9px rgba(255,255,255,.72);
+    transition:transform .16s ease, box-shadow .2s ease, color .2s ease, background .2s ease;
+  }
+
+  #panel-remind .verse-source-chip.active{
+    color:#fff;
+    background:linear-gradient(145deg,#7770EC,#5C60DF);
+    box-shadow:
+      5px 6px 12px rgba(73,72,171,.22),
+      -3px -3px 8px rgba(255,255,255,.42),
+      inset 1px 1px 0 rgba(255,255,255,.22);
+  }
+
+  #panel-remind .verse-source-chip:active{
+    transform:scale(.98);
+  }
+
+  #panel-remind .verse-source-note{
+    margin-top:7px;
+    font-size:.64rem;
+    line-height:1.35;
+    color:#71799b;
+  }
+
+  #panel-remind .time-row{ gap:10px; margin-top:0; }
     #panel-remind input[type="time"]{
       padding:9px 6px;
       font-size:.82rem;
@@ -1846,6 +1903,15 @@
         <div class="freq-chip active" data-min="120"><span class="chip-inner"><span class="bell-ic" aria-hidden="true"></span>Every 2 hrs</span></div>
         <div class="freq-chip" data-min="180"><span class="chip-inner"><span class="bell-ic" aria-hidden="true"></span>Every 3 hrs</span></div>
       </div>
+
+      <div class="verse-source">
+        <span class="verse-source-label">Verse source</span>
+        <div class="verse-source-options" id="verse-source-options">
+          <button class="verse-source-chip active" type="button" data-mode="current">Current verse</button>
+          <button class="verse-source-chip" type="button" data-mode="rotate">Rotate saved</button>
+        </div>
+        <div class="verse-source-note" id="verse-source-note">Reminders will use your current verse.</div>
+      </div>
     </div>
 
     <div class="card">
@@ -2092,6 +2158,20 @@
 
   async function saveScriptureLibrary(items){
     await saveJSON('scripture-library', items);
+
+    if(window.AndroidBridge && window.AndroidBridge.syncReminderRotation){
+      const settings = await loadJSON('reminder-settings', {
+        frequencyMinutes: 120,
+        startTime: '07:00',
+        endTime: '22:00',
+        verseMode: 'current'
+      });
+
+      window.AndroidBridge.syncReminderRotation(
+        settings.verseMode || 'current',
+        JSON.stringify(items)
+      );
+    }
   }
 
   function makeVerseId(){
@@ -2454,6 +2534,57 @@ if (batterySettingsButton) {
   };
 
   const freqChips = document.querySelectorAll('.freq-chip');
+  const verseSourceChips = document.querySelectorAll('.verse-source-chip');
+  const verseSourceNote = document.getElementById('verse-source-note');
+
+  async function syncReminderRotation(){
+    if(!(window.AndroidBridge && window.AndroidBridge.syncReminderRotation)) return;
+
+    const settings = await loadJSON('reminder-settings', {
+      frequencyMinutes: 120,
+      startTime: '07:00',
+      endTime: '22:00',
+      verseMode: 'current'
+    });
+
+    const items = await getScriptureLibrary();
+
+    window.AndroidBridge.syncReminderRotation(
+      settings.verseMode || 'current',
+      JSON.stringify(items)
+    );
+  }
+
+  function updateVerseSourceUI(mode){
+    verseSourceChips.forEach(chip => {
+      chip.classList.toggle('active', chip.dataset.mode === mode);
+    });
+
+    if(verseSourceNote){
+      verseSourceNote.textContent = mode === 'rotate'
+        ? 'Reminders will cycle through your saved verses.'
+        : 'Reminders will use your current verse.';
+    }
+  }
+
+  verseSourceChips.forEach(chip => {
+    chip.onclick = async () => {
+      const settings = await loadJSON('reminder-settings', {
+        frequencyMinutes: 120,
+        startTime: '07:00',
+        endTime: '22:00',
+        verseMode: 'current'
+      });
+
+      settings.verseMode = chip.dataset.mode || 'current';
+
+      await saveJSON('reminder-settings', settings);
+
+      updateVerseSourceUI(settings.verseMode);
+      await syncReminderRotation();
+      await scheduleNativeReminders();
+    };
+  });
 
   async function scheduleNativeReminders(){
     if(!(window.AndroidBridge && window.AndroidBridge.scheduleReminders)) return;
@@ -2497,10 +2628,19 @@ if (batterySettingsButton) {
     if(anchorReference) anchorReference.value = anchor.reference || '';
     refreshButtons();
 
-    const settings = await loadJSON('reminder-settings', { frequencyMinutes: 120, startTime: '07:00', endTime: '22:00' });
+    const settings = await loadJSON('reminder-settings', {
+      frequencyMinutes: 120,
+      startTime: '07:00',
+      endTime: '22:00',
+      verseMode: 'current'
+    });
+
     freqChips.forEach(c => c.classList.toggle('active', parseInt(c.dataset.min,10) === settings.frequencyMinutes));
     document.getElementById('start-time').value = settings.startTime;
     document.getElementById('end-time').value = settings.endTime;
+
+    updateVerseSourceUI(settings.verseMode || 'current');
+    await syncReminderRotation();
 
     const savedGoal = await loadJSON('daily-goal', 7);
     dailyGoal = Math.min(GOAL_MAX, Math.max(GOAL_MIN, savedGoal));

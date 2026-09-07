@@ -28,6 +28,18 @@ public final class ReminderScheduler {
         scheduleNext(context);
     }
 
+    public static void saveRotationSettings(Context context, String mode, String libraryJson) {
+
+        android.content.SharedPreferences p = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+
+        p.edit()
+            .putString("rotation_mode", mode == null ? "current" : mode)
+            .putString("rotation_library", libraryJson == null ? "[]" : libraryJson)
+            .putInt("rotation_index", 0)
+            .apply();
+
+    }
+
     public static void scheduleNext(Context context) {
         cancel(context);
         android.content.SharedPreferences p = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);

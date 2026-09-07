@@ -79,6 +79,15 @@ public class MainActivity extends Activity {
         }
 
         @JavascriptInterface
+        public void syncReminderRotation(String mode, String libraryJson) {
+            ReminderScheduler.saveRotationSettings(
+                context,
+                mode == null ? "current" : mode,
+                libraryJson == null ? "[]" : libraryJson
+            );
+        }
+
+        @JavascriptInterface
         public void cancelReminders() {
             ReminderScheduler.cancel(context);
         }
