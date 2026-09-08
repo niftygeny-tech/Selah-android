@@ -74,7 +74,7 @@ public class ReminderReceiver extends BroadcastReceiver {
             b = new android.app.Notification.Builder(context, NotificationHelper.CHANNEL_ID);
         } else {
             b = new android.app.Notification.Builder(context)
-                .setSound(android.net.Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.dove_chime));
+                .setSound(android.net.Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.dove_chime_v3));
         }
 
         b.setSmallIcon(R.drawable.ic_selah_notification)

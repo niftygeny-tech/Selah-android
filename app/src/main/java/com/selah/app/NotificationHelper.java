@@ -8,14 +8,14 @@ import android.net.Uri;
 import android.os.Build;
 
 public final class NotificationHelper {
-    public static final String CHANNEL_ID = "selah_reminders";
+    public static final String CHANNEL_ID = "one_eight_reminders_v2";
     private NotificationHelper() {}
 
     public static void createChannel(Context context) {
         if (Build.VERSION.SDK_INT < 26) return;
         NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (nm == null) return;
-        Uri sound = Uri.parse("android.resource://" + context.getPackageName() + "/" + com.selah.app.R.raw.dove_chime);
+        Uri sound = Uri.parse("android.resource://" + context.getPackageName() + "/" + com.selah.app.R.raw.dove_chime_v3);
         AudioAttributes attrs = new AudioAttributes.Builder()
             .setUsage(AudioAttributes.USAGE_NOTIFICATION)
             .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
