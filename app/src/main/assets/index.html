@@ -1755,6 +1755,319 @@
   }
 
 
+  /* ---- Journal ---- */
+
+  .journal-entry-btn{
+    width:100%;
+    margin-top:10px;
+    min-height:44px;
+  }
+
+  .journal-screen{
+    display:none;
+    position:absolute;
+    inset:0;
+    z-index:24;
+    overflow:hidden;
+    background:var(--bg);
+  }
+
+  .journal-screen.active{
+    display:block;
+    animation:focusIn .28s ease;
+  }
+
+  .journal-inner{
+    height:100%;
+    padding:8px 2px 0;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .journal-back{
+    align-self:flex-start;
+    border:none;
+    min-height:38px;
+    padding:8px 13px;
+    border-radius:14px;
+    background:var(--surface);
+    color:#59618B;
+    font-family:'Sora',sans-serif;
+    font-size:.72rem;
+    font-weight:700;
+    cursor:pointer;
+    box-shadow:
+      4px 4px 9px rgba(75,87,132,.12),
+      -4px -4px 9px rgba(255,255,255,.72);
+  }
+
+  .journal-head{
+    margin:18px 4px 14px;
+  }
+
+  .journal-title{
+    font-family:'Fraunces',serif;
+    font-size:1.72rem;
+    font-weight:700;
+    color:var(--ink-strong);
+  }
+
+  .journal-subtitle{
+    margin-top:5px;
+    max-width:320px;
+    font-size:.74rem;
+    line-height:1.45;
+    color:#70789A;
+  }
+
+  .journal-scroll{
+    flex:1;
+    min-height:0;
+    overflow-y:auto;
+    padding:2px 4px 130px;
+    scrollbar-width:none;
+  }
+
+  .journal-scroll::-webkit-scrollbar{
+    display:none;
+  }
+
+  .journal-compose{
+    padding:14px;
+    border-radius:20px;
+    background:var(--surface);
+    box-shadow:
+      6px 6px 14px rgba(75,87,132,.11),
+      -6px -6px 14px rgba(255,255,255,.72);
+  }
+
+  .journal-scripture{
+    margin-bottom:10px;
+    padding:10px 12px;
+    border-radius:14px;
+    background:var(--surface-soft);
+  }
+
+  .journal-scripture-ref{
+    font:700 .64rem 'IBM Plex Mono',monospace;
+    color:var(--accent);
+    margin-bottom:5px;
+  }
+
+  .journal-scripture-text{
+    font-family:'Fraunces',serif;
+    font-size:.9rem;
+    line-height:1.4;
+    color:var(--ink-strong);
+  }
+
+  .journal-textarea{
+    width:100%;
+    min-height:130px;
+    resize:vertical;
+    border:none;
+    outline:none;
+    border-radius:16px;
+    padding:14px;
+    background:var(--surface-soft);
+    color:var(--ink-strong);
+    font-family:'Sora',sans-serif;
+    font-size:.9rem;
+    line-height:1.5;
+    box-shadow:
+      inset 4px 4px 9px rgba(93,107,153,.11),
+      inset -4px -4px 9px rgba(255,255,255,.72);
+  }
+
+  .journal-save-btn{
+    width:100%;
+    margin-top:10px;
+    min-height:44px;
+  }
+
+  .journal-section-title{
+    margin:18px 2px 9px;
+    font:700 .68rem 'IBM Plex Mono',monospace;
+    color:#59618b;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+  }
+
+  .journal-list{
+    display:flex;
+    flex-direction:column;
+    gap:9px;
+  }
+
+  .journal-empty{
+    padding:22px 14px;
+    text-align:center;
+    border-radius:18px;
+    background:var(--surface-soft);
+    color:var(--muted);
+    font-size:.74rem;
+    line-height:1.5;
+  }
+
+  .journal-item{
+    padding:14px;
+    border-radius:18px;
+    background:var(--surface);
+    box-shadow:
+      4px 4px 10px rgba(75,87,132,.09),
+      -4px -4px 10px rgba(255,255,255,.66);
+  }
+
+  .journal-item-top{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:8px;
+  }
+
+  .journal-item-ref{
+    font:700 .64rem 'IBM Plex Mono',monospace;
+    color:var(--accent);
+  }
+
+  .journal-item-date{
+    flex:0 0 auto;
+    font:500 .56rem 'IBM Plex Mono',monospace;
+    color:var(--muted);
+  }
+
+  .journal-item-note{
+    font-size:.82rem;
+    line-height:1.5;
+    color:#505979;
+    white-space:pre-wrap;
+    word-break:break-word;
+  }
+
+  .journal-item-scripture{
+    margin-top:9px;
+    padding-top:9px;
+    border-top:1px solid rgba(112,122,165,.12);
+    font-family:'Fraunces',serif;
+    font-size:.78rem;
+    line-height:1.4;
+    color:#737b9e;
+  }
+
+  .journal-item-actions{
+    display:flex;
+    gap:8px;
+    margin-top:11px;
+  }
+
+  .journal-item-actions button{
+    flex:1;
+    min-height:34px;
+    border:none;
+    border-radius:12px;
+    font:600 .64rem 'Sora',sans-serif;
+    cursor:pointer;
+  }
+
+  .journal-delete-confirm{
+    display:none;
+    position:absolute;
+    inset:0;
+    z-index:80;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    background:rgba(38,43,67,.34);
+    backdrop-filter:blur(4px);
+    -webkit-backdrop-filter:blur(4px);
+  }
+
+  .journal-delete-confirm.active{
+    display:flex;
+  }
+
+  .journal-delete-dialog{
+    width:100%;
+    max-width:320px;
+    padding:20px;
+    border-radius:22px;
+    background:var(--surface);
+    box-shadow:
+      10px 12px 28px rgba(46,52,87,.24),
+      -5px -5px 14px rgba(255,255,255,.70);
+  }
+
+  .journal-delete-title{
+    font-family:'Fraunces',serif;
+    font-size:1.25rem;
+    font-weight:700;
+    color:var(--ink-strong);
+  }
+
+  .journal-delete-copy{
+    margin-top:7px;
+    font-size:.76rem;
+    line-height:1.5;
+    color:var(--muted);
+  }
+
+  .journal-delete-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:9px;
+    margin-top:18px;
+  }
+
+  .journal-delete-actions button{
+    min-height:42px;
+    border:none;
+    border-radius:14px;
+    font:700 .72rem 'Sora',sans-serif;
+    cursor:pointer;
+  }
+
+  .journal-delete-cancel{
+    color:#656d91;
+    background:var(--surface-soft);
+  }
+
+  .journal-delete-confirm-btn{
+    color:#fff;
+    background:linear-gradient(145deg,#7770EC,#5C60DF);
+  }
+
+  .journal-edit-btn{
+    color:var(--accent);
+    background:var(--surface-soft);
+  }
+
+  .journal-delete-btn{
+    color:#71799b;
+    background:var(--surface);
+    box-shadow:
+      3px 3px 7px rgba(75,87,132,.08),
+      -3px -3px 7px rgba(255,255,255,.60);
+  }
+
+  @media (max-height:760px){
+    .journal-head{
+      margin:12px 4px 10px;
+    }
+
+    .journal-title{
+      font-size:1.48rem;
+    }
+
+    .journal-scroll{
+      padding-bottom:110px;
+    }
+
+    .journal-textarea{
+      min-height:110px;
+    }
+  }
+
   /* ---- Phase 3: Scripture Packs screen ---- */
 
   .packs-entry-btn{
@@ -2721,6 +3034,10 @@
         Scripture Packs
       </button>
 
+      <button class="btn btn-glass journal-entry-btn" id="btn-open-journal" type="button">
+        Journal
+      </button>
+
       <div class="page-bottom-note">
         <div class="stat-line">You’ll be reminded at your chosen times. Set them in <b>Reminders</b>.</div>
         <div class="empty-space-note">“What you keep before you, shapes what you become.”</div>
@@ -2805,6 +3122,61 @@
           <button class="btn btn-solid pack-import-btn" id="btn-import-pack" type="button">
             Add pack to library
           </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="journal-screen" id="journal-screen">
+      <div class="journal-inner">
+        <button class="journal-back" id="btn-close-journal" type="button">← Back</button>
+
+        <div class="journal-head">
+          <div class="journal-title">Journal</div>
+          <div class="journal-subtitle">Write what stands out to you as you meditate on the Word.</div>
+        </div>
+
+        <div class="journal-scroll">
+          <div class="journal-compose">
+            <div class="journal-scripture">
+              <div class="journal-scripture-ref" id="journal-current-ref">Current Scripture</div>
+              <div class="journal-scripture-text" id="journal-current-text">Your current verse will appear here.</div>
+            </div>
+
+            <textarea
+              class="journal-textarea"
+              id="journal-note"
+              placeholder="What are you seeing, learning, or receiving from this scripture?"
+            ></textarea>
+
+            <button class="btn btn-solid journal-save-btn" id="btn-save-journal" type="button">
+              Save reflection
+            </button>
+          </div>
+
+          <div class="journal-section-title">Recent reflections</div>
+
+          <div class="journal-list" id="journal-list">
+            <div class="journal-empty">Your saved reflections will appear here.</div>
+          </div>
+        </div>
+
+        <div class="journal-delete-confirm" id="journal-delete-confirm">
+          <div class="journal-delete-dialog">
+            <div class="journal-delete-title">Delete reflection?</div>
+            <div class="journal-delete-copy">
+              This reflection will be permanently removed. This action cannot be undone.
+            </div>
+
+            <div class="journal-delete-actions">
+              <button class="journal-delete-cancel" id="journal-delete-cancel" type="button">
+                Cancel
+              </button>
+
+              <button class="journal-delete-confirm-btn" id="journal-delete-confirm-btn" type="button">
+                Delete
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -4027,6 +4399,282 @@
     await saveJSON('daily-goal', dailyGoal);
     renderMedCount(await currentCountToday());
   };
+
+  // ---------- Journal ----------
+  const journalScreen = document.getElementById('journal-screen');
+  const journalOpenBtn = document.getElementById('btn-open-journal');
+  const journalCloseBtn = document.getElementById('btn-close-journal');
+  const journalCurrentRef = document.getElementById('journal-current-ref');
+  const journalCurrentText = document.getElementById('journal-current-text');
+  const journalNote = document.getElementById('journal-note');
+  const journalSaveBtn = document.getElementById('btn-save-journal');
+  const journalList = document.getElementById('journal-list');
+  const journalDeleteConfirm = document.getElementById('journal-delete-confirm');
+  const journalDeleteCancel = document.getElementById('journal-delete-cancel');
+  const journalDeleteConfirmBtn = document.getElementById('journal-delete-confirm-btn');
+
+  let editingJournalId = null;
+  let pendingJournalDeleteId = null;
+
+  function makeJournalId(){
+    return 'journal-' + Date.now() + '-' + Math.random().toString(36).slice(2,8);
+  }
+
+  function escapeJournalText(value){
+    return String(value || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  async function getJournalEntries(){
+    const entries = await loadJSON('journal-entries', []);
+    return Array.isArray(entries) ? entries : [];
+  }
+
+  async function updateJournalCurrentScripture(){
+    const anchor = await loadJSON('anchor', { text:'', reference:'' });
+
+    const text = String(anchor.text || '').trim();
+    const reference = String(anchor.reference || '').trim();
+
+    if(journalCurrentRef){
+      journalCurrentRef.textContent = reference || 'Current Scripture';
+    }
+
+    if(journalCurrentText){
+      journalCurrentText.textContent =
+        text || 'Add a current scripture on the One Eight page before writing your reflection.';
+    }
+  }
+
+  function journalDateLabel(value){
+    try{
+      const date = new Date(value);
+      if(Number.isNaN(date.getTime())) return '';
+
+      return date.toLocaleString([], {
+        month:'short',
+        day:'numeric',
+        year:'numeric',
+        hour:'2-digit',
+        minute:'2-digit'
+      });
+    }catch(e){
+      return '';
+    }
+  }
+
+  async function renderJournalEntries(){
+    if(!journalList) return;
+
+    const entries = await getJournalEntries();
+
+    if(entries.length === 0){
+      journalList.innerHTML =
+        '<div class="journal-empty">Your saved reflections will appear here.</div>';
+      return;
+    }
+
+    journalList.innerHTML = entries.map(item => {
+      const reference = escapeJournalText(item.reference || 'Reflection');
+      const note = escapeJournalText(item.note || '');
+      const scripture = escapeJournalText(item.scripture || '');
+      const date = escapeJournalText(journalDateLabel(item.updatedAt || item.createdAt));
+      const id = escapeJournalText(item.id || '');
+
+      return `
+        <div class="journal-item" data-journal-id="${id}">
+          <div class="journal-item-top">
+            <div class="journal-item-ref">${reference}</div>
+            <div class="journal-item-date">${date}</div>
+          </div>
+
+          <div class="journal-item-note">${note}</div>
+
+          ${scripture ? `
+            <div class="journal-item-scripture">${scripture}</div>
+          ` : ''}
+
+          <div class="journal-item-actions">
+            <button class="journal-edit-btn" type="button" data-journal-action="edit">
+              Edit
+            </button>
+            <button class="journal-delete-btn" type="button" data-journal-action="delete">
+              Delete
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  async function resetJournalEditor(){
+    editingJournalId = null;
+
+    if(journalNote){
+      journalNote.value = '';
+    }
+
+    if(journalSaveBtn){
+      journalSaveBtn.textContent = 'Save reflection';
+    }
+
+    await updateJournalCurrentScripture();
+  }
+
+  async function openJournalScreen(){
+    if(!journalScreen) return;
+
+    await resetJournalEditor();
+    await renderJournalEntries();
+
+    normalView.style.display = 'none';
+    journalScreen.classList.add('active');
+  }
+
+  function closeJournalScreen(){
+    if(!journalScreen) return;
+
+    journalScreen.classList.remove('active');
+    normalView.style.display = '';
+    editingJournalId = null;
+  }
+
+  if(journalOpenBtn){
+    journalOpenBtn.addEventListener('click', openJournalScreen);
+  }
+
+  if(journalCloseBtn){
+    journalCloseBtn.addEventListener('click', closeJournalScreen);
+  }
+
+  if(journalSaveBtn){
+    journalSaveBtn.addEventListener('click', async () => {
+      const note = journalNote ? journalNote.value.trim() : '';
+      if(!note) return;
+
+      const anchor = await loadJSON('anchor', { text:'', reference:'' });
+      const entries = await getJournalEntries();
+      const now = new Date().toISOString();
+
+      if(editingJournalId){
+        const index = entries.findIndex(item => item && item.id === editingJournalId);
+
+        if(index !== -1){
+          entries[index] = {
+            ...entries[index],
+            note,
+            updatedAt: now
+          };
+        }
+      }else{
+        entries.unshift({
+          id: makeJournalId(),
+          note,
+          scripture: String(anchor.text || '').trim(),
+          reference: String(anchor.reference || '').trim(),
+          createdAt: now,
+          updatedAt: now
+        });
+      }
+
+      await saveJSON('journal-entries', entries);
+      await resetJournalEditor();
+      await renderJournalEntries();
+    });
+  }
+
+  if(journalList){
+    journalList.addEventListener('click', async event => {
+      const actionButton = event.target.closest('[data-journal-action]');
+      if(!actionButton) return;
+
+      const itemElement = event.target.closest('.journal-item');
+      if(!itemElement) return;
+
+      const id = itemElement.dataset.journalId;
+      const entries = await getJournalEntries();
+      const item = entries.find(entry => entry && entry.id === id);
+
+      if(!item) return;
+
+      const action = actionButton.dataset.journalAction;
+
+      if(action === 'edit'){
+        editingJournalId = id;
+
+        if(journalNote){
+          journalNote.value = item.note || '';
+          journalNote.focus();
+        }
+
+        if(journalCurrentRef){
+          journalCurrentRef.textContent = item.reference || 'Saved reflection';
+        }
+
+        if(journalCurrentText){
+          journalCurrentText.textContent =
+            item.scripture || 'No scripture was linked to this reflection.';
+        }
+
+        if(journalSaveBtn){
+          journalSaveBtn.textContent = 'Update reflection';
+        }
+
+        const scrollArea = journalScreen
+          ? journalScreen.querySelector('.journal-scroll')
+          : null;
+
+        if(scrollArea){
+          scrollArea.scrollTo({ top:0, behavior:'smooth' });
+        }
+
+      }else if(action === 'delete'){
+        pendingJournalDeleteId = id;
+
+        if(journalDeleteConfirm){
+          journalDeleteConfirm.classList.add('active');
+        }
+      }
+    });
+  }
+
+  if(journalDeleteCancel){
+    journalDeleteCancel.addEventListener('click', () => {
+      pendingJournalDeleteId = null;
+
+      if(journalDeleteConfirm){
+        journalDeleteConfirm.classList.remove('active');
+      }
+    });
+  }
+
+  if(journalDeleteConfirmBtn){
+    journalDeleteConfirmBtn.addEventListener('click', async () => {
+      if(!pendingJournalDeleteId) return;
+
+      const deleteId = pendingJournalDeleteId;
+      const entries = await getJournalEntries();
+      const updated = entries.filter(entry => entry && entry.id !== deleteId);
+
+      await saveJSON('journal-entries', updated);
+
+      if(editingJournalId === deleteId){
+        await resetJournalEditor();
+      }
+
+      pendingJournalDeleteId = null;
+
+      if(journalDeleteConfirm){
+        journalDeleteConfirm.classList.remove('active');
+      }
+
+      await renderJournalEntries();
+    });
+  }
 
   // ---------- History & Streaks ----------
   const historyScreen = document.getElementById('history-screen');
