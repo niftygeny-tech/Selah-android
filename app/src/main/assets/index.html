@@ -3333,6 +3333,63 @@
     }
   }
 
+
+  /* ---- History true full-screen alignment ---- */
+
+  /* Expand History through the Home panel side padding. */
+  #panel-anchor > .history-screen{
+    left:-20px !important;
+    right:auto !important;
+    width:calc(100% + 40px) !important;
+    max-width:none !important;
+  }
+
+  /* Keep all History content centered with equal side margins. */
+  .history-inner{
+    width:100% !important;
+    max-width:none !important;
+    padding:12px 20px 30px !important;
+    box-sizing:border-box !important;
+  }
+
+  .history-back,
+  .history-title,
+  .history-subtitle,
+  .history-stats,
+  .history-week,
+  .history-list,
+  .history-section-title{
+    max-width:none !important;
+    box-sizing:border-box !important;
+  }
+
+  .history-stats,
+  .history-week,
+  .history-list{
+    width:100% !important;
+    margin-left:0 !important;
+    margin-right:0 !important;
+  }
+
+  .history-section-title{
+    width:100% !important;
+    margin-left:2px !important;
+    margin-right:0 !important;
+  }
+
+  @media (max-width:360px){
+    #panel-anchor > .history-screen{
+      left:-15px !important;
+      right:auto !important;
+      width:calc(100% + 30px) !important;
+    }
+
+    .history-inner{
+      padding-left:14px !important;
+      padding-right:14px !important;
+    }
+  }
+
 </style>
 
 </head>
