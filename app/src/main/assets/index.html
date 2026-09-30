@@ -2952,12 +2952,393 @@
   }
 
 
+
+  /* ---- Four-tab bottom navigation ---- */
+
+  #home-header{
+    order:1;
+  }
+
+  .panel-stage{
+    order:2;
+  }
+
+  nav.tabs{
+    order:3;
+    flex:0 0 auto;
+    margin:10px -6px 0;
+    padding:7px 4px 6px;
+    gap:2px;
+    border-radius:21px;
+    background:linear-gradient(145deg,#7770EC,#5C60DF);
+    box-shadow:
+      0 -2px 14px rgba(67,65,155,.12),
+      7px 8px 18px rgba(73,72,171,.20);
+  }
+
+  nav.tabs .tab-indicator{
+    display:none !important;
+  }
+
+  nav.tabs button{
+    min-width:0;
+    min-height:54px;
+    padding:5px 2px;
+    border-radius:15px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:4px;
+    color:rgba(255,255,255,.62);
+    font-size:.58rem;
+    font-weight:600;
+    line-height:1.15;
+    text-shadow:none;
+  }
+
+  nav.tabs button svg{
+    width:21px;
+    height:21px;
+    flex:0 0 21px;
+  }
+
+  nav.tabs button.active{
+    color:#fff;
+    background:rgba(255,255,255,.13);
+    box-shadow:
+      inset 1px 1px 0 rgba(255,255,255,.20),
+      0 3px 9px rgba(48,45,135,.16);
+  }
+
+  nav.tabs button span{
+    max-width:100%;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  /* Journal and Packs now have permanent bottom-nav entries. */
+  #btn-open-journal,
+  #btn-open-packs{
+    display:none !important;
+  }
+
+  /* Their old Home-overlay back buttons are no longer needed
+     for normal top-level navigation. */
+  #btn-close-journal,
+  #btn-close-packs{
+    display:none !important;
+  }
+
+  .journal-head,
+  .packs-screen-head{
+    margin-top:6px;
+  }
+
+  /* Only Home shows the One Eight title / slogan / daily goal. */
+  .app:not(.home-tab-active) #home-header{
+    display:none;
+  }
+
+  @media (max-width:360px){
+    nav.tabs button{
+      font-size:.54rem;
+    }
+
+    nav.tabs button svg{
+      width:20px;
+      height:20px;
+    }
+  }
+
+
+  /* ---- Full-page navigation cleanup ---- */
+
+  /* Non-Home tabs begin at the top of the app instead of leaving
+     the old Home-header spacing visible. */
+  .app:not(.home-tab-active){
+    padding-top:0 !important;
+  }
+
+  /* Journal and History were originally inset overlays.
+     Extend their page backgrounds through the app side padding. */
+  #panel-anchor > .journal-screen,
+  #panel-anchor > .history-screen{
+    left:-20px !important;
+    right:-20px !important;
+    width:auto !important;
+  }
+
+  /* Restore normal readable spacing for their actual content. */
+  .journal-inner,
+  .history-inner{
+    padding-left:22px !important;
+    padding-right:22px !important;
+  }
+
+  /* Make Journal/History backgrounds visually continuous. */
+  .journal-screen,
+  .history-screen{
+    border-radius:0 !important;
+    box-shadow:none !important;
+  }
+
+  /* Packs is now a top-level page: remove any visible top gap
+     and keep its scenic background continuous. */
+  .packs-screen{
+    top:0 !important;
+    border-radius:0 !important;
+    box-shadow:none !important;
+  }
+
+  @media (max-width:360px){
+    #panel-anchor > .journal-screen,
+    #panel-anchor > .history-screen{
+      left:-15px !important;
+      right:-15px !important;
+    }
+
+    .journal-inner,
+    .history-inner{
+      padding-left:17px !important;
+      padding-right:17px !important;
+    }
+  }
+
+
+  /* ---- Final tab spacing alignment ---- */
+
+  /* Journal: align its cards more naturally beneath the page heading. */
+  .journal-scroll{
+    padding-left:8px !important;
+    padding-right:8px !important;
+  }
+
+  /* Reminders: restore comfortable space below the phone status bar. */
+  #panel-remind{
+    padding-top:16px;
+  }
+
+  @media (max-height:760px){
+    #panel-remind{
+      padding-top:12px;
+    }
+  }
+
+
+  /* ---- Journal final horizontal alignment ---- */
+
+  /* Journal screen extends 20px through the app padding.
+     Restore the normal content alignment inside it. */
+  .journal-inner{
+    padding-left:40px !important;
+    padding-right:40px !important;
+  }
+
+  .journal-scroll{
+    padding-left:4px !important;
+    padding-right:4px !important;
+  }
+
+  @media (max-width:360px){
+    .journal-inner{
+      padding-left:30px !important;
+      padding-right:30px !important;
+    }
+  }
+
+
+  /* ---- Journal keyboard writing mode ---- */
+
+  /* Slightly shift Journal content right so cards align with the heading. */
+  .journal-inner{
+    padding-left:48px !important;
+    padding-right:32px !important;
+  }
+
+  /* While typing, temporarily remove bottom navigation so the
+     keyboard and editor do not compete for vertical space. */
+  .app.journal-typing nav.tabs{
+    display:none !important;
+  }
+
+  .app.journal-typing .panel-stage{
+    flex:1 1 auto;
+    height:100%;
+  }
+
+  .app.journal-typing .journal-scroll{
+    padding-bottom:24px !important;
+  }
+
+  .app.journal-typing .journal-compose{
+    margin-bottom:16px;
+  }
+
+  @media (max-width:360px){
+    .journal-inner{
+      padding-left:36px !important;
+      padding-right:24px !important;
+    }
+  }
+
+
+  /* ---- Journal wide layout + reliable keyboard restore ---- */
+
+  /* Use more of the available screen width. */
+  .journal-inner{
+    padding-left:26px !important;
+    padding-right:26px !important;
+  }
+
+  .journal-scroll{
+    padding-left:2px !important;
+    padding-right:2px !important;
+  }
+
+  .journal-compose,
+  .journal-item{
+    width:100%;
+  }
+
+  @media (max-width:360px){
+    .journal-inner{
+      padding-left:20px !important;
+      padding-right:20px !important;
+    }
+  }
+
+
+  /* ---- Journal definitive full-width layout ---- */
+
+  /* Journal is a full page now, so use nearly the whole screen width. */
+  .journal-inner{
+    width:100% !important;
+    max-width:none !important;
+    padding-left:16px !important;
+    padding-right:16px !important;
+  }
+
+  /* Align heading and all Journal content to the same edges. */
+  .journal-head{
+    width:100% !important;
+    margin-left:0 !important;
+    margin-right:0 !important;
+    padding-left:0 !important;
+    padding-right:0 !important;
+  }
+
+  .journal-scroll{
+    width:100% !important;
+    padding-left:0 !important;
+    padding-right:0 !important;
+  }
+
+  .journal-compose,
+  .journal-list,
+  .journal-item,
+  .journal-section-title{
+    width:100% !important;
+    max-width:none !important;
+    margin-left:0 !important;
+    margin-right:0 !important;
+  }
+
+  .journal-compose{
+    padding:16px !important;
+  }
+
+  .journal-section-title{
+    padding-left:2px;
+  }
+
+  @media (max-width:360px){
+    .journal-inner{
+      padding-left:12px !important;
+      padding-right:12px !important;
+    }
+  }
+
+
+  /* ---- Journal true full-screen alignment ---- */
+
+  /*
+     Journal lives inside the padded Home panel.
+     Explicitly expand the Journal page through that padding so
+     its background and content use the full phone width.
+  */
+  #panel-anchor > .journal-screen{
+    left:-20px !important;
+    right:auto !important;
+    width:calc(100% + 40px) !important;
+    max-width:none !important;
+  }
+
+  .journal-inner{
+    width:100% !important;
+    max-width:none !important;
+    padding:10px 20px 0 !important;
+  }
+
+  /* Title and content now share the exact same horizontal alignment. */
+  .journal-head{
+    width:100% !important;
+    max-width:none !important;
+    margin:12px 0 14px !important;
+    padding:0 4px !important;
+  }
+
+  .journal-scroll{
+    width:100% !important;
+    max-width:none !important;
+    padding-left:4px !important;
+    padding-right:4px !important;
+  }
+
+  .journal-compose,
+  .journal-list,
+  .journal-item,
+  .journal-section-title{
+    width:100% !important;
+    max-width:none !important;
+    margin-left:0 !important;
+    margin-right:0 !important;
+  }
+
+  .journal-compose{
+    padding:16px !important;
+  }
+
+  .journal-section-title{
+    padding-left:2px !important;
+  }
+
+  @media (max-width:360px){
+    #panel-anchor > .journal-screen{
+      left:-15px !important;
+      right:auto !important;
+      width:calc(100% + 30px) !important;
+    }
+
+    .journal-inner{
+      padding-left:14px !important;
+      padding-right:14px !important;
+    }
+
+    .journal-head,
+    .journal-scroll{
+      padding-left:2px !important;
+      padding-right:2px !important;
+    }
+  }
+
 </style>
 
 </head>
 <body>
 <div class="app">
-  <header>
+  <header id="home-header">
     <div class="mark">One Eight</div>
     <div class="sub">say it, hear it, keep it in front of you</div>
     <div class="goal-row">
@@ -2968,15 +3349,41 @@
   </header>
 
   <nav class="tabs" id="main-tabs" aria-label="Main navigation">
-    <div class="tab-indicator" aria-hidden="true"></div>
-    <button id="tab-anchor" class="active">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5"/><path d="M6.5 9.5V20h11V9.5"/><path d="M10 20v-6h4v6"/></svg>
-      <span>One Eight</span>
+
+    <button id="tab-anchor" class="active" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" aria-hidden="true">
+        <path d="M4 10.5 12 4l8 6.5"/>
+        <path d="M6.5 9.5V20h11V9.5"/>
+        <path d="M10 20v-6h4v6"/>
+      </svg>
+      <span>Home</span>
     </button>
-    <button id="tab-remind">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v5l3 1.8"/></svg>
+
+    <button id="tab-journal" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" aria-hidden="true">
+        <path d="M6 4.5h10.5A1.5 1.5 0 0 1 18 6v14H7.5A1.5 1.5 0 0 1 6 18.5z"/>
+        <path d="M9 8h6M9 11h6M9 14h4"/>
+      </svg>
+      <span>Journal</span>
+    </button>
+
+    <button id="tab-packs" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" aria-hidden="true">
+        <path d="M5 5.5h5.5v13H5z"/>
+        <path d="M13.5 5.5H19v13h-5.5z"/>
+        <path d="M10.5 7.5h3"/>
+      </svg>
+      <span>Packs</span>
+    </button>
+
+    <button id="tab-remind" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" aria-hidden="true">
+        <circle cx="12" cy="12" r="8.5"/>
+        <path d="M12 7.5v5l3 1.8"/>
+      </svg>
       <span>Reminders</span>
     </button>
+
   </nav>
 
   <main class="panel-stage" id="panel-stage">
@@ -3420,43 +3827,176 @@
     }catch(e){}
   }
 
-  // ---------- tabs ----------
-  const tabs = { anchor: document.getElementById('tab-anchor'), remind: document.getElementById('tab-remind') };
-  const panels = { anchor: document.getElementById('panel-anchor'), remind: document.getElementById('panel-remind') };
+  // ---------- main bottom navigation ----------
+  const tabs = {
+    anchor: document.getElementById('tab-anchor'),
+    journal: document.getElementById('tab-journal'),
+    packs: document.getElementById('tab-packs'),
+    remind: document.getElementById('tab-remind')
+  };
+
+  const panels = {
+    anchor: document.getElementById('panel-anchor'),
+    remind: document.getElementById('panel-remind')
+  };
+
   const mainTabs = document.getElementById('main-tabs');
   const panelStage = document.getElementById('panel-stage');
+  const homeHeader = document.getElementById('home-header');
+  const mainTabOrder = ['anchor','journal','packs','remind'];
+
   let activeTab = 'anchor';
   let tabAnimating = false;
 
-  Object.keys(tabs).forEach(key => { tabs[key].onclick = () => switchTab(key); });
+  document.querySelector('.app').classList.add('home-tab-active');
 
-  function switchTab(which){
+  Object.keys(tabs).forEach(key => {
+    if(tabs[key]){
+      tabs[key].onclick = () => switchTab(key, true);
+    }
+  });
+
+  function setMainTabVisualState(which){
+    Object.keys(tabs).forEach(key => {
+      if(tabs[key]){
+        tabs[key].classList.toggle('active', key === which);
+      }
+    });
+
+    const app = document.querySelector('.app');
+    if(app){
+      app.classList.toggle('home-tab-active', which === 'anchor');
+    }
+  }
+
+  async function switchTab(which, pushHistory){
+    if(!mainTabOrder.includes(which)) which = 'anchor';
     if(which === activeTab || tabAnimating) return;
 
     const previous = activeTab;
-    const goingRight = previous === 'anchor' && which === 'remind';
-    const oldPanel = panels[previous];
-    const newPanel = panels[which];
+    const previousIndex = mainTabOrder.indexOf(previous);
+    const nextIndex = mainTabOrder.indexOf(which);
+    const goingRight = nextIndex > previousIndex;
 
     tabAnimating = true;
     activeTab = which;
+    setMainTabVisualState(which);
 
-    Object.keys(tabs).forEach(key => tabs[key].classList.toggle('active', key === which));
-    mainTabs.classList.toggle('remind-active', which === 'remind');
+    const anchorPanel = panels.anchor;
+    const remindPanel = panels.remind;
 
-    newPanel.style.display = 'block';
+    /* Reset all top-level destinations first. */
+    const openHistoryScreen = document.getElementById('history-screen');
+    if(openHistoryScreen){
+      openHistoryScreen.classList.remove('active');
+    }
 
-    oldPanel.classList.add('animating', goingRight ? 'leave-to-left' : 'leave-to-right');
-    newPanel.classList.add('animating', goingRight ? 'enter-from-right' : 'enter-from-left');
+    if(typeof journalScreen !== 'undefined' && journalScreen){
+      journalScreen.classList.remove('active');
+    }
 
-    setTimeout(() => {
-      oldPanel.classList.remove('active','animating','leave-to-left','leave-to-right');
-      oldPanel.style.display = '';
-      newPanel.classList.remove('animating','enter-from-right','enter-from-left');
-      newPanel.classList.add('active');
-      tabAnimating = false;
-    }, 360);
+    if(typeof packsScreen !== 'undefined' && packsScreen){
+      packsScreen.classList.remove('active');
+    }
+
+    if(typeof normalView !== 'undefined' && normalView){
+      normalView.style.display = '';
+    }
+
+    anchorPanel.classList.remove(
+      'animating','enter-from-right','enter-from-left',
+      'leave-to-left','leave-to-right'
+    );
+
+    remindPanel.classList.remove(
+      'animating','enter-from-right','enter-from-left',
+      'leave-to-left','leave-to-right'
+    );
+
+    if(which === 'remind'){
+      anchorPanel.classList.remove('active');
+      anchorPanel.style.display = '';
+
+      remindPanel.style.display = 'block';
+      remindPanel.classList.add(
+        'active',
+        'animating',
+        goingRight ? 'enter-from-right' : 'enter-from-left'
+      );
+
+      setTimeout(() => {
+        remindPanel.classList.remove('animating','enter-from-right','enter-from-left');
+        tabAnimating = false;
+      }, 360);
+
+    }else{
+      remindPanel.classList.remove('active');
+      remindPanel.style.display = '';
+
+      anchorPanel.style.display = 'block';
+      anchorPanel.classList.add(
+        'active',
+        'animating',
+        goingRight ? 'enter-from-right' : 'enter-from-left'
+      );
+
+      if(which === 'anchor'){
+        if(typeof normalView !== 'undefined' && normalView){
+          normalView.style.display = '';
+        }
+
+      }else if(which === 'journal'){
+        if(typeof normalView !== 'undefined' && normalView){
+          normalView.style.display = 'none';
+        }
+
+        if(typeof resetJournalEditor === 'function'){
+          await resetJournalEditor();
+        }
+
+        if(typeof renderJournalEntries === 'function'){
+          await renderJournalEntries();
+        }
+
+        if(typeof journalScreen !== 'undefined' && journalScreen){
+          journalScreen.classList.add('active');
+        }
+
+      }else if(which === 'packs'){
+        if(typeof normalView !== 'undefined' && normalView){
+          normalView.style.display = 'none';
+        }
+
+        if(typeof packsScreen !== 'undefined' && packsScreen){
+          packsScreen.classList.add('active');
+        }
+      }
+
+      setTimeout(() => {
+        anchorPanel.classList.remove('animating','enter-from-right','enter-from-left');
+        tabAnimating = false;
+      }, 360);
+    }
+
+    if(pushHistory !== false){
+      try{
+        history.pushState({ oneEightTab: which }, '', location.pathname + location.search);
+      }catch(e){}
+    }
   }
+
+  try{
+    history.replaceState({ oneEightTab:'anchor' }, '', location.pathname + location.search);
+  }catch(e){}
+
+  window.addEventListener('popstate', event => {
+    const state = event.state || {};
+    const destination = mainTabOrder.includes(state.oneEightTab)
+      ? state.oneEightTab
+      : 'anchor';
+
+    switchTab(destination, false);
+  });
 
   // ---------- anchor text ----------
   const anchorInput = document.getElementById('anchor-text');
@@ -3948,13 +4488,11 @@
   }
 
   function openPacksScreen(){
-    if(!packsScreen) return;
-    packsScreen.classList.add('active');
+    switchTab('packs', true);
   }
 
   function closePacksScreen(){
-    if(!packsScreen) return;
-    packsScreen.classList.remove('active');
+    switchTab('anchor', true);
   }
 
   if(openPacksBtn){
@@ -4416,6 +4954,69 @@
   let editingJournalId = null;
   let pendingJournalDeleteId = null;
 
+  if(journalNote){
+    let journalViewportHeight = window.visualViewport
+      ? window.visualViewport.height
+      : window.innerHeight;
+
+    function syncJournalKeyboardState(){
+      const app = document.querySelector('.app');
+      if(!app) return;
+
+      const currentHeight = window.visualViewport
+        ? window.visualViewport.height
+        : window.innerHeight;
+
+      const keyboardOpen =
+        document.activeElement === journalNote &&
+        currentHeight < journalViewportHeight * 0.82;
+
+      app.classList.toggle('journal-typing', keyboardOpen);
+
+      if(!keyboardOpen && currentHeight > journalViewportHeight * 0.92){
+        journalViewportHeight = currentHeight;
+      }
+    }
+
+    journalNote.addEventListener('focus', () => {
+      journalViewportHeight = Math.max(
+        journalViewportHeight,
+        window.visualViewport
+          ? window.visualViewport.height
+          : window.innerHeight
+      );
+
+      setTimeout(() => {
+        syncJournalKeyboardState();
+
+        try{
+          journalNote.scrollIntoView({
+            behavior:'smooth',
+            block:'center'
+          });
+        }catch(e){}
+      }, 220);
+    });
+
+    journalNote.addEventListener('blur', () => {
+      const app = document.querySelector('.app');
+
+      if(app){
+        app.classList.remove('journal-typing');
+      }
+    });
+
+    if(window.visualViewport){
+      window.visualViewport.addEventListener('resize', () => {
+        setTimeout(syncJournalKeyboardState, 80);
+      });
+    }
+
+    window.addEventListener('resize', () => {
+      setTimeout(syncJournalKeyboardState, 80);
+    });
+  }
+
   function makeJournalId(){
     return 'journal-' + Date.now() + '-' + Math.random().toString(36).slice(2,8);
   }
@@ -4526,21 +5127,12 @@
   }
 
   async function openJournalScreen(){
-    if(!journalScreen) return;
-
-    await resetJournalEditor();
-    await renderJournalEntries();
-
-    normalView.style.display = 'none';
-    journalScreen.classList.add('active');
+    await switchTab('journal', true);
   }
 
   function closeJournalScreen(){
-    if(!journalScreen) return;
-
-    journalScreen.classList.remove('active');
-    normalView.style.display = '';
     editingJournalId = null;
+    switchTab('anchor', true);
   }
 
   if(journalOpenBtn){
