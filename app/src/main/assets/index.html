@@ -2256,6 +2256,111 @@
   }
 
 
+
+  /* ---- Saved Scripture search + filter ---- */
+
+  .library-search-tools{
+    margin-bottom:14px;
+  }
+
+  .library-search-input{
+    width:100%;
+    border:none;
+    outline:none;
+    padding:12px 14px;
+    border-radius:16px;
+    background:var(--surface-soft);
+    color:var(--ink-strong);
+    font-family:'Sora',sans-serif;
+    font-size:.76rem;
+    box-shadow:
+      inset 5px 5px 11px rgba(93,107,153,.14),
+      inset -5px -5px 11px rgba(255,255,255,.86);
+  }
+
+  .library-search-input::placeholder{
+    color:#8A91AE;
+  }
+
+  .library-filter-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:7px;
+    margin-top:9px;
+  }
+
+  .library-filter-chip{
+    border:none;
+    min-height:34px;
+    padding:7px 11px;
+    border-radius:12px;
+    background:var(--surface);
+    color:#626B94;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.62rem;
+    cursor:pointer;
+    box-shadow:
+      4px 4px 9px rgba(75,87,132,.10),
+      -4px -4px 9px rgba(255,255,255,.68);
+  }
+
+  .library-filter-chip.active{
+    color:#fff;
+    background:linear-gradient(145deg,#7770EC,#5C60DF);
+    box-shadow:
+      5px 6px 12px rgba(73,72,171,.20),
+      inset 1px 1px 0 rgba(255,255,255,.20);
+  }
+
+
+
+  /* ---- Detailed Scripture Pack filters ---- */
+
+  .pack-category-filter{
+    display:none;
+    gap:7px;
+    margin-top:9px;
+    padding:2px 1px 5px;
+    overflow-x:auto;
+    overflow-y:hidden;
+    white-space:nowrap;
+    scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  .pack-category-filter.visible{
+    display:flex;
+  }
+
+  .pack-category-filter::-webkit-scrollbar{
+    display:none;
+  }
+
+  .pack-category-chip{
+    flex:0 0 auto;
+    border:none;
+    min-height:32px;
+    padding:7px 10px;
+    border-radius:11px;
+    background:rgba(226,232,246,.90);
+    color:#687095;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.59rem;
+    cursor:pointer;
+    box-shadow:
+      3px 3px 8px rgba(75,87,132,.10),
+      -3px -3px 8px rgba(255,255,255,.66);
+  }
+
+  .pack-category-chip.active{
+    color:#fff;
+    background:linear-gradient(145deg,#7770EC,#5C60DF);
+    box-shadow:
+      4px 5px 10px rgba(73,72,171,.18),
+      inset 1px 1px 0 rgba(255,255,255,.20);
+  }
+
+
 </style>
 
 </head>
@@ -2345,6 +2450,35 @@
       </div>
 
       <div class="library-view" id="library-saved">
+        <div class="library-search-tools">
+          <input
+            id="saved-search"
+            class="library-search-input"
+            type="search"
+            placeholder="Search saved verses or references"
+            autocomplete="off"
+          >
+
+          <div class="library-filter-row">
+            <button class="library-filter-chip active" type="button" data-filter="all">All</button>
+            <button class="library-filter-chip" type="button" data-filter="my-verses">My Verses</button>
+            <button class="library-filter-chip" type="button" data-filter="packs">Packs</button>
+          </div>
+
+          <div class="pack-category-filter" id="pack-category-filter">
+            <button class="pack-category-chip active" type="button" data-pack-filter="all">All Packs</button>
+            <button class="pack-category-chip" type="button" data-pack-filter="faith">Faith</button>
+            <button class="pack-category-chip" type="button" data-pack-filter="peace">Peace</button>
+            <button class="pack-category-chip" type="button" data-pack-filter="strength">Strength</button>
+            <button class="pack-category-chip" type="button" data-pack-filter="wisdom">Wisdom</button>
+            <button class="pack-category-chip" type="button" data-pack-filter="healing">Healing</button>
+            <button class="pack-category-chip" type="button" data-pack-filter="identity">Identity</button>
+            <button class="pack-category-chip" type="button" data-pack-filter="prayer">Prayer</button>
+            <button class="pack-category-chip" type="button" data-pack-filter="love">Love</button>
+            <button class="pack-category-chip" type="button" data-pack-filter="prosperity">Prosperity</button>
+          </div>
+        </div>
+
         <div class="library-list" id="saved-verses-list"></div>
         <div class="library-note page-bottom-note">Saved verses stay on this device and can be made current anytime.</div>
       </div>
@@ -2671,6 +2805,55 @@
   const savedVersesList = document.getElementById('saved-verses-list');
   const favoriteVersesList = document.getElementById('favorite-verses-list');
   const saveCurrentBtn = document.getElementById('btn-save-current');
+
+
+  const savedSearch = document.getElementById('saved-search');
+  const savedFilterChips = document.querySelectorAll('.library-filter-chip');
+  const packCategoryFilter = document.getElementById('pack-category-filter');
+  const packCategoryChips = document.querySelectorAll('.pack-category-chip');
+  let savedSearchQuery = '';
+  let savedFilterMode = 'all';
+  let savedPackCategory = 'all';
+
+  function filterSavedItems(items){
+    const query = savedSearchQuery.trim().toLowerCase();
+
+    return items.filter(item => {
+      const isPackVerse =
+        item.source === 'preloaded' ||
+        !!item.pack ||
+        !!item.category;
+
+      if(savedFilterMode === 'my-verses' && isPackVerse){
+        return false;
+      }
+
+      if(savedFilterMode === 'packs' && !isPackVerse){
+        return false;
+      }
+
+      if(
+        savedFilterMode === 'packs' &&
+        savedPackCategory !== 'all' &&
+        (item.pack || '').toLowerCase() !== savedPackCategory
+      ){
+        return false;
+      }
+
+      if(!query){
+        return true;
+      }
+
+      const searchable = [
+        item.text || '',
+        item.reference || '',
+        item.category || '',
+        item.pack || ''
+      ].join(' ').toLowerCase();
+
+      return searchable.includes(query);
+    });
+  }
 
   const openPacksBtn = document.getElementById('btn-open-packs');
   const closePacksBtn = document.getElementById('btn-close-packs');
@@ -3224,9 +3407,18 @@
     const currentReference = current.reference || '';
 
     if(savedVersesList){
-      savedVersesList.innerHTML = items.length
-        ? items.map(item => verseCardHTML(item, currentText, currentReference)).join('')
-        : '<div class="empty-library">No saved verses yet.<br>Save the scripture you are meditating on and it will appear here.</div>';
+      const filteredItems = filterSavedItems(items);
+
+      if(items.length === 0){
+        savedVersesList.innerHTML =
+          '<div class="empty-library">No saved verses yet.<br>Save the scripture you are meditating on and it will appear here.</div>';
+      }else if(filteredItems.length === 0){
+        savedVersesList.innerHTML =
+          '<div class="empty-library">No verses match your search or filter.</div>';
+      }else{
+        savedVersesList.innerHTML =
+          filteredItems.map(item => verseCardHTML(item, currentText, currentReference)).join('');
+      }
     }
 
     const favorites = items.filter(item => item.favorite);
@@ -3267,6 +3459,42 @@
 
   bindLibraryList(savedVersesList);
   bindLibraryList(favoriteVersesList);
+
+
+  if(savedSearch){
+    savedSearch.addEventListener('input', () => {
+      savedSearchQuery = savedSearch.value || '';
+      renderScriptureLibrary();
+    });
+  }
+
+  savedFilterChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      savedFilterMode = chip.dataset.filter || 'all';
+
+      savedFilterChips.forEach(button => {
+        button.classList.toggle('active', button === chip);
+      });
+
+      if(packCategoryFilter){
+        packCategoryFilter.classList.toggle('visible', savedFilterMode === 'packs');
+      }
+
+      renderScriptureLibrary();
+    });
+  });
+
+  packCategoryChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      savedPackCategory = chip.dataset.packFilter || 'all';
+
+      packCategoryChips.forEach(button => {
+        button.classList.toggle('active', button === chip);
+      });
+
+      renderScriptureLibrary();
+    });
+  });
 
   // Read Aloud — use Android native Text-to-Speech when running in the app.
   let keepAliveTimer = null;
