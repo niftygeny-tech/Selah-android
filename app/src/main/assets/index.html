@@ -103,6 +103,196 @@
     transition:color .2s;
   }
 
+  #med-count-line{
+    border:none;
+    background:rgba(255,255,255,.34);
+    padding:7px 10px;
+    border-radius:12px;
+    cursor:pointer;
+    box-shadow:
+      inset 1px 1px 0 rgba(255,255,255,.55),
+      2px 3px 8px rgba(75,87,132,.08);
+  }
+
+  #med-count-line::after{
+    content:' ›';
+    color:var(--accent);
+    font-weight:700;
+  }
+
+  #med-count-line:active{
+    transform:scale(.97);
+  }
+
+  /* ---- History & Streaks ---- */
+  .history-screen{
+    display:none;
+    position:absolute;
+    inset:0;
+    z-index:30;
+    overflow-y:auto;
+    padding-bottom:140px;
+    background:var(--bg);
+  }
+
+  .history-screen.active{
+    display:block;
+  }
+
+  .history-inner{
+    padding:2px 2px 24px;
+  }
+
+  .history-back{
+    border:none;
+    background:transparent;
+    color:var(--accent);
+    font:600 .76rem 'IBM Plex Mono',monospace;
+    padding:8px 2px 14px;
+    cursor:pointer;
+  }
+
+  .history-title{
+    font-family:'Fraunces',serif;
+    font-size:1.8rem;
+    font-weight:600;
+    color:var(--ink-strong);
+  }
+
+  .history-subtitle{
+    margin-top:4px;
+    margin-bottom:16px;
+    font-size:.74rem;
+    color:var(--muted);
+  }
+
+  .history-stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:9px;
+    margin-bottom:16px;
+  }
+
+  .history-stat{
+    min-width:0;
+    padding:14px 8px;
+    border-radius:18px;
+    text-align:center;
+    background:var(--surface);
+    box-shadow:
+      5px 5px 12px rgba(75,87,132,.11),
+      -5px -5px 12px rgba(255,255,255,.72);
+  }
+
+  .history-stat-value{
+    display:block;
+    font-family:'Fraunces',serif;
+    font-size:1.45rem;
+    color:var(--ink-strong);
+  }
+
+  .history-stat-label{
+    display:block;
+    margin-top:3px;
+    font:600 .56rem 'IBM Plex Mono',monospace;
+    color:var(--muted);
+  }
+
+  .history-section-title{
+    margin:18px 2px 9px;
+    font:700 .68rem 'IBM Plex Mono',monospace;
+    color:#59618b;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+  }
+
+  .history-week{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    gap:6px;
+  }
+
+  .history-day{
+    text-align:center;
+    padding:9px 2px;
+    border-radius:13px;
+    background:var(--surface-soft);
+    font:600 .58rem 'IBM Plex Mono',monospace;
+    color:var(--muted);
+  }
+
+  .history-list{
+    display:flex;
+    flex-direction:column;
+    gap:9px;
+  }
+
+  .history-empty{
+    padding:22px 14px;
+    text-align:center;
+    border-radius:18px;
+    background:var(--surface-soft);
+    color:var(--muted);
+    font-size:.74rem;
+    line-height:1.5;
+  }
+
+  .history-day.active{
+    color:#fff;
+    background:linear-gradient(145deg,#7770EC,#5C60DF);
+    box-shadow:4px 5px 10px rgba(73,72,171,.18);
+  }
+
+  .history-day.today{
+    outline:1px solid rgba(103,96,223,.34);
+  }
+
+  .history-day-name{
+    display:block;
+  }
+
+  .history-day-count{
+    display:block;
+    margin-top:5px;
+    font-family:'Fraunces',serif;
+    font-size:.9rem;
+  }
+
+  .history-item{
+    padding:13px 14px;
+    border-radius:17px;
+    background:var(--surface);
+    box-shadow:
+      4px 4px 10px rgba(75,87,132,.09),
+      -4px -4px 10px rgba(255,255,255,.66);
+  }
+
+  .history-item-top{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    align-items:center;
+    margin-bottom:6px;
+  }
+
+  .history-item-ref{
+    font:700 .65rem 'IBM Plex Mono',monospace;
+    color:var(--accent);
+  }
+
+  .history-item-meta{
+    flex:0 0 auto;
+    font:500 .56rem 'IBM Plex Mono',monospace;
+    color:var(--muted);
+  }
+
+  .history-item-text{
+    font-family:'Fraunces',serif;
+    font-size:.92rem;
+    line-height:1.45;
+    color:var(--ink-strong);
+  }
+
   .goal-row{
     display:flex;
     align-items:center;
@@ -2371,7 +2561,7 @@
     <div class="sub">say it, hear it, keep it in front of you</div>
     <div class="goal-row">
       <button class="goal-btn" id="goal-minus" aria-label="Lower daily goal">−</button>
-      <span class="meta" id="med-count-line">0 of 7 today</span>
+      <button class="meta" id="med-count-line" type="button" aria-label="Open meditation history">0 of 7 today</button>
       <button class="goal-btn" id="goal-plus" aria-label="Raise daily goal">+</button>
     </div>
   </header>
@@ -2527,6 +2717,38 @@
           <button class="btn btn-solid pack-import-btn" id="btn-import-pack" type="button">
             Add pack to library
           </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="history-screen" id="history-screen">
+      <div class="history-inner">
+        <button class="history-back" id="btn-close-history" type="button">← Back</button>
+
+        <div class="history-title">History & Streaks</div>
+        <div class="history-subtitle">A quiet record of time spent keeping the Word before you.</div>
+
+        <div class="history-stats">
+          <div class="history-stat">
+            <span class="history-stat-value" id="history-current-streak">0</span>
+            <span class="history-stat-label">Current streak</span>
+          </div>
+          <div class="history-stat">
+            <span class="history-stat-value" id="history-longest-streak">0</span>
+            <span class="history-stat-label">Longest streak</span>
+          </div>
+          <div class="history-stat">
+            <span class="history-stat-value" id="history-total-sessions">0</span>
+            <span class="history-stat-label">Total sessions</span>
+          </div>
+        </div>
+
+        <div class="history-section-title">This week</div>
+        <div class="history-week" id="history-week"></div>
+
+        <div class="history-section-title">Recent meditation</div>
+        <div class="history-list" id="history-list">
+          <div class="history-empty">Complete a Hagah session and your meditation history will appear here.</div>
         </div>
       </div>
     </div>
@@ -3633,11 +3855,42 @@
   };
 
   async function logMeditation(){
-    const log = await loadJSON('meditation-log', { date: todayStr(), count: 0 });
-    if(log.date !== todayStr()){ log.date = todayStr(); log.count = 0; }
+    const today = todayStr();
+
+    // Keep the existing daily counter working exactly as before.
+    const log = await loadJSON('meditation-log', { date: today, count: 0 });
+    if(log.date !== today){
+      log.date = today;
+      log.count = 0;
+    }
+
     log.count += 1;
     await saveJSON('meditation-log', log);
+
+    // Store detailed completed Hagah sessions for History & Streaks.
+    const history = await loadJSON('meditation-history', []);
+    const sessions = Array.isArray(history) ? history : [];
+
+    sessions.unshift({
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2),
+      date: today,
+      completedAt: new Date().toISOString(),
+      text: anchorInput.value.trim(),
+      reference: anchorReference ? anchorReference.value.trim() : '',
+      durationMinutes: selectedMinutes
+    });
+
+    // Keep local storage lightweight while retaining plenty of history.
+    if(sessions.length > 500){
+      sessions.length = 500;
+    }
+
+    await saveJSON('meditation-history', sessions);
     renderMedCount(log.count);
+
+    if(historyScreen && historyScreen.classList.contains('active')){
+      await renderMeditationHistory();
+    }
   }
 
   let dailyGoal = 7;
@@ -3662,6 +3915,205 @@
     await saveJSON('daily-goal', dailyGoal);
     renderMedCount(await currentCountToday());
   };
+
+  // ---------- History & Streaks ----------
+  const historyScreen = document.getElementById('history-screen');
+  const historyOpenBtn = document.getElementById('med-count-line');
+  const historyCloseBtn = document.getElementById('btn-close-history');
+  const historyCurrentStreak = document.getElementById('history-current-streak');
+  const historyLongestStreak = document.getElementById('history-longest-streak');
+  const historyTotalSessions = document.getElementById('history-total-sessions');
+  const historyWeek = document.getElementById('history-week');
+  const historyList = document.getElementById('history-list');
+
+  function historyDateFromString(dateString){
+    const parts = String(dateString || '').split('-').map(Number);
+    if(parts.length !== 3 || parts.some(n => !Number.isFinite(n))) return null;
+    return new Date(parts[0], parts[1] - 1, parts[2]);
+  }
+
+  function historyDateString(date){
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + d;
+  }
+
+  function historyDaysBetween(a, b){
+    const one = historyDateFromString(a);
+    const two = historyDateFromString(b);
+    if(!one || !two) return null;
+    const day = 24 * 60 * 60 * 1000;
+    return Math.round((one - two) / day);
+  }
+
+  function escapeHistoryText(value){
+    return String(value || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  async function renderMeditationHistory(){
+    const raw = await loadJSON('meditation-history', []);
+    const sessions = Array.isArray(raw) ? raw : [];
+
+    if(historyTotalSessions){
+      historyTotalSessions.textContent = sessions.length;
+    }
+
+    const uniqueDates = [...new Set(
+      sessions
+        .map(item => item && item.date)
+        .filter(Boolean)
+    )].sort().reverse();
+
+    let currentStreak = 0;
+
+    if(uniqueDates.length){
+      const today = todayStr();
+
+      let expected = today;
+      if(uniqueDates[0] !== today){
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayString = historyDateString(yesterday);
+
+        if(uniqueDates[0] === yesterdayString){
+          expected = yesterdayString;
+        }else{
+          expected = null;
+        }
+      }
+
+      if(expected){
+        for(const date of uniqueDates){
+          if(date === expected){
+            currentStreak += 1;
+            const d = historyDateFromString(expected);
+            d.setDate(d.getDate() - 1);
+            expected = historyDateString(d);
+          }else{
+            break;
+          }
+        }
+      }
+    }
+
+    let longestStreak = 0;
+    let running = 0;
+    let previous = null;
+
+    [...uniqueDates].reverse().forEach(date => {
+      if(previous === null){
+        running = 1;
+      }else if(historyDaysBetween(date, previous) === 1){
+        running += 1;
+      }else{
+        running = 1;
+      }
+
+      longestStreak = Math.max(longestStreak, running);
+      previous = date;
+    });
+
+    if(historyCurrentStreak){
+      historyCurrentStreak.textContent = currentStreak;
+    }
+
+    if(historyLongestStreak){
+      historyLongestStreak.textContent = longestStreak;
+    }
+
+    if(historyWeek){
+      const today = new Date();
+      const weekday = today.getDay();
+      const mondayOffset = weekday === 0 ? -6 : 1 - weekday;
+
+      const monday = new Date(today);
+      monday.setHours(0,0,0,0);
+      monday.setDate(today.getDate() + mondayOffset);
+
+      const dayNames = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+      const todayKey = todayStr();
+
+      historyWeek.innerHTML = dayNames.map((name, index) => {
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + index);
+
+        const key = historyDateString(d);
+        const count = sessions.filter(item => item && item.date === key).length;
+        const classes = [
+          'history-day',
+          count > 0 ? 'active' : '',
+          key === todayKey ? 'today' : ''
+        ].filter(Boolean).join(' ');
+
+        return '<div class="' + classes + '">' +
+          '<span class="history-day-name">' + name + '</span>' +
+          '<span class="history-day-count">' + count + '</span>' +
+        '</div>';
+      }).join('');
+    }
+
+    if(historyList){
+      if(sessions.length === 0){
+        historyList.innerHTML =
+          '<div class="history-empty">Complete a Hagah session and your meditation history will appear here.</div>';
+      }else{
+        historyList.innerHTML = sessions.slice(0, 12).map(item => {
+          let timeLabel = '';
+
+          if(item.completedAt){
+            const date = new Date(item.completedAt);
+            if(!Number.isNaN(date.getTime())){
+              timeLabel = date.toLocaleTimeString([], {
+                hour:'2-digit',
+                minute:'2-digit'
+              });
+            }
+          }
+
+          const ref = item.reference
+            ? escapeHistoryText(item.reference)
+            : 'Meditation';
+
+          const duration = Math.max(1, parseInt(item.durationMinutes, 10) || 1);
+
+          return '<div class="history-item">' +
+            '<div class="history-item-top">' +
+              '<span class="history-item-ref">' + ref + '</span>' +
+              '<span class="history-item-meta">' +
+                escapeHistoryText(item.date || '') +
+                ' · ' + duration + 'm' +
+                (timeLabel ? ' · ' + escapeHistoryText(timeLabel) : '') +
+              '</span>' +
+            '</div>' +
+            '<div class="history-item-text">' +
+              escapeHistoryText(item.text || '') +
+            '</div>' +
+          '</div>';
+        }).join('');
+      }
+    }
+  }
+
+  if(historyOpenBtn){
+    historyOpenBtn.addEventListener('click', async () => {
+      await renderMeditationHistory();
+      normalView.style.display = 'none';
+      historyScreen.classList.add('active');
+    });
+  }
+
+  if(historyCloseBtn){
+    historyCloseBtn.addEventListener('click', () => {
+      historyScreen.classList.remove('active');
+      normalView.style.display = '';
+    });
+  }
 
   // ---------- reminders ----------
   const NOTIFICATION_LINES = [
