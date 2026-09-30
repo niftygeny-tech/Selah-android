@@ -79,6 +79,15 @@ public class MainActivity extends Activity {
         }
 
         @JavascriptInterface
+        public void scheduleCustomReminders(String text, String customTimes) {
+            ReminderScheduler.saveCustomTimesAndSchedule(
+                context,
+                text == null ? "" : text,
+                customTimes == null ? "" : customTimes
+            );
+        }
+
+        @JavascriptInterface
         public void syncReminderRotation(String mode, String libraryJson) {
             ReminderScheduler.saveRotationSettings(
                 context,

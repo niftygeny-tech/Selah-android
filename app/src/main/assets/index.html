@@ -820,6 +820,94 @@
     box-shadow:6px 7px 13px rgba(73,72,171,.22);
   }
 
+  .schedule-mode-options{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin-bottom:14px;
+  }
+
+  .schedule-mode-chip{
+    border:none;
+    min-height:40px;
+    padding:9px 10px;
+    border-radius:14px;
+    background:var(--surface);
+    color:#59618b;
+    font:600 .68rem 'IBM Plex Mono',monospace;
+    cursor:pointer;
+    box-shadow:
+      4px 4px 9px rgba(75,87,132,.12),
+      -4px -4px 9px rgba(255,255,255,.72);
+  }
+
+  .schedule-mode-chip.active{
+    color:#fff;
+    background:linear-gradient(145deg,#7770EC,#5C60DF);
+    box-shadow:
+      5px 6px 12px rgba(73,72,171,.22),
+      inset 1px 1px 0 rgba(255,255,255,.22);
+  }
+
+  .custom-times-controls{
+    display:none;
+  }
+
+  .custom-times-controls.active{
+    display:block;
+  }
+
+  .custom-times-note{
+    margin:0 0 10px;
+    color:#71799b;
+    font-size:.66rem;
+    line-height:1.4;
+  }
+
+  .custom-time-list{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+
+  .custom-time-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+
+  .custom-time-row input[type="time"]{
+    flex:1;
+    min-width:0;
+  }
+
+  .custom-time-remove{
+    width:36px;
+    height:36px;
+    flex:0 0 36px;
+    border:none;
+    border-radius:12px;
+    background:var(--surface);
+    color:#737b9e;
+    font-size:1rem;
+    cursor:pointer;
+    box-shadow:
+      3px 3px 8px rgba(75,87,132,.10),
+      -3px -3px 8px rgba(255,255,255,.68);
+  }
+
+  .custom-time-add{
+    width:100%;
+    margin-top:9px;
+    border:none;
+    min-height:38px;
+    border-radius:13px;
+    background:var(--surface-soft);
+    color:var(--accent);
+    font:600 .66rem 'IBM Plex Mono',monospace;
+    cursor:pointer;
+  }
+
   .freq-chips{
     display:grid;
     grid-template-columns:repeat(2,1fr);
@@ -2787,13 +2875,43 @@
     </div>
 
     <div class="card">
-      <span class="label">How often</span>
-      <div class="freq-chips" id="freq-chips">
-        <div class="freq-chip" data-min="10"><span class="chip-inner"><span class="bell-ic" aria-hidden="true"></span>Every 10 min</span></div>
-        <div class="freq-chip" data-min="30"><span class="chip-inner"><span class="bell-ic" aria-hidden="true"></span>Every 30 min</span></div>
-        <div class="freq-chip" data-min="60"><span class="chip-inner"><span class="bell-ic" aria-hidden="true"></span>Every hour</span></div>
-        <div class="freq-chip active" data-min="120"><span class="chip-inner"><span class="bell-ic" aria-hidden="true"></span>Every 2 hrs</span></div>
-        <div class="freq-chip" data-min="180"><span class="chip-inner"><span class="bell-ic" aria-hidden="true"></span>Every 3 hrs</span></div>
+      <span class="label">Reminder schedule</span>
+
+      <div class="schedule-mode-options" id="schedule-mode-options">
+        <button class="schedule-mode-chip active" type="button" data-schedule-mode="interval">Interval</button>
+        <button class="schedule-mode-chip" type="button" data-schedule-mode="custom">Custom times</button>
+      </div>
+
+      <div id="interval-reminder-controls">
+        <span class="label">How often</span>
+        <div class="freq-chips" id="freq-chips">
+          <div class="freq-chip" data-min="10"><span class="chip-inner"><span class="bell-ic" aria-hidden="true"></span>Every 10 min</span></div>
+          <div class="freq-chip" data-min="30"><span class="chip-inner"><span class="bell-ic" aria-hidden="true"></span>Every 30 min</span></div>
+          <div class="freq-chip" data-min="60"><span class="chip-inner"><span class="bell-ic" aria-hidden="true"></span>Every hour</span></div>
+          <div class="freq-chip active" data-min="120"><span class="chip-inner"><span class="bell-ic" aria-hidden="true"></span>Every 2 hrs</span></div>
+          <div class="freq-chip" data-min="180"><span class="chip-inner"><span class="bell-ic" aria-hidden="true"></span>Every 3 hrs</span></div>
+        </div>
+      </div>
+
+      <div class="custom-times-controls" id="custom-times-controls">
+        <div class="custom-times-note">Choose the exact times you want One Eight to remind you each day.</div>
+
+        <div class="custom-time-list" id="custom-time-list">
+          <div class="custom-time-row">
+            <input type="time" class="custom-time-input" value="07:00">
+            <button class="custom-time-remove" type="button" aria-label="Remove reminder time">×</button>
+          </div>
+          <div class="custom-time-row">
+            <input type="time" class="custom-time-input" value="12:00">
+            <button class="custom-time-remove" type="button" aria-label="Remove reminder time">×</button>
+          </div>
+          <div class="custom-time-row">
+            <input type="time" class="custom-time-input" value="18:00">
+            <button class="custom-time-remove" type="button" aria-label="Remove reminder time">×</button>
+          </div>
+        </div>
+
+        <button class="custom-time-add" id="btn-add-custom-time" type="button">+ Add another time</button>
       </div>
 
       <div class="verse-source">
@@ -2806,7 +2924,7 @@
       </div>
     </div>
 
-    <div class="card">
+    <div class="card" id="interval-hours-card">
       <span class="label">Active hours</span>
       <div class="time-row">
         <div class="tblock with-icon">
@@ -2990,10 +3108,7 @@
       const tag = document.getElementById('saved-tag');
       tag.textContent = 'Saved';
       setTimeout(() => { tag.textContent = ''; }, 1400);
-      if(window.AndroidBridge && window.AndroidBridge.scheduleReminders){
-        const settings = await loadJSON('reminder-settings', { frequencyMinutes: 120, startTime: '07:00', endTime: '22:00' });
-        window.AndroidBridge.scheduleReminders(anchorInput.value.trim(), settings.frequencyMinutes, settings.startTime, settings.endTime);
-      }
+      await scheduleNativeReminders();
     }, 500);
   });
 
@@ -3564,10 +3679,7 @@
 
     refreshButtons();
 
-    if(window.AndroidBridge && window.AndroidBridge.scheduleReminders){
-      const settings = await loadJSON('reminder-settings', { frequencyMinutes: 120, startTime: '07:00', endTime: '22:00' });
-      window.AndroidBridge.scheduleReminders(anchorInput.value.trim(), settings.frequencyMinutes, settings.startTime, settings.endTime);
-    }
+    await scheduleNativeReminders();
 
     switchLibraryTab('current');
   }
@@ -4154,6 +4266,93 @@ if (batterySettingsButton) {
   const verseSourceChips = document.querySelectorAll('.verse-source-chip');
   const verseSourceNote = document.getElementById('verse-source-note');
 
+  const scheduleModeChips = document.querySelectorAll('.schedule-mode-chip');
+  const intervalReminderControls = document.getElementById('interval-reminder-controls');
+  const customTimesControls = document.getElementById('custom-times-controls');
+  const customTimeList = document.getElementById('custom-time-list');
+  const addCustomTimeButton = document.getElementById('btn-add-custom-time');
+  const intervalHoursCard = document.getElementById('interval-hours-card');
+
+  const DEFAULT_CUSTOM_TIMES = ['07:00', '12:00', '18:00'];
+
+  function reminderSettingsDefaults(){
+    return {
+      frequencyMinutes: 120,
+      startTime: '07:00',
+      endTime: '22:00',
+      verseMode: 'current',
+      scheduleMode: 'interval',
+      customTimes: DEFAULT_CUSTOM_TIMES.slice()
+    };
+  }
+
+  function normaliseCustomTimes(times){
+    if(!Array.isArray(times)) return DEFAULT_CUSTOM_TIMES.slice();
+
+    const cleaned = times
+      .map(value => String(value || '').trim())
+      .filter(value => /^([01]\d|2[0-3]):[0-5]\d$/.test(value));
+
+    return cleaned.length ? [...new Set(cleaned)].sort() : DEFAULT_CUSTOM_TIMES.slice();
+  }
+
+  function customTimeRowHTML(value){
+    const safeValue = /^([01]\d|2[0-3]):[0-5]\d$/.test(value || '') ? value : '07:00';
+
+    return `
+      <div class="custom-time-row">
+        <input type="time" class="custom-time-input" value="${safeValue}">
+        <button class="custom-time-remove" type="button" aria-label="Remove reminder time">×</button>
+      </div>
+    `;
+  }
+
+  function renderCustomTimes(times){
+    if(!customTimeList) return;
+
+    const safeTimes = normaliseCustomTimes(times);
+    customTimeList.innerHTML = safeTimes.map(customTimeRowHTML).join('');
+  }
+
+  function readCustomTimesFromUI(){
+    if(!customTimeList) return DEFAULT_CUSTOM_TIMES.slice();
+
+    return [...customTimeList.querySelectorAll('.custom-time-input')]
+      .map(input => input.value.trim())
+      .filter(value => /^([01]\d|2[0-3]):[0-5]\d$/.test(value))
+      .filter((value, index, all) => all.indexOf(value) === index)
+      .sort();
+  }
+
+  function updateScheduleModeUI(mode){
+    const safeMode = mode === 'custom' ? 'custom' : 'interval';
+
+    scheduleModeChips.forEach(chip => {
+      chip.classList.toggle('active', chip.dataset.scheduleMode === safeMode);
+    });
+
+    if(intervalReminderControls){
+      intervalReminderControls.style.display = safeMode === 'interval' ? '' : 'none';
+    }
+
+    if(customTimesControls){
+      customTimesControls.classList.toggle('active', safeMode === 'custom');
+    }
+
+    if(intervalHoursCard){
+      intervalHoursCard.style.display = safeMode === 'interval' ? '' : 'none';
+    }
+  }
+
+  async function saveCustomTimesFromUI(){
+    const settings = await loadJSON('reminder-settings', reminderSettingsDefaults());
+    settings.scheduleMode = 'custom';
+    settings.customTimes = readCustomTimesFromUI();
+
+    await saveJSON('reminder-settings', settings);
+    await scheduleNativeReminders();
+  }
+
   async function syncReminderRotation(){
     if(!(window.AndroidBridge && window.AndroidBridge.syncReminderRotation)) return;
 
@@ -4204,10 +4403,101 @@ if (batterySettingsButton) {
   });
 
   async function scheduleNativeReminders(){
-    if(!(window.AndroidBridge && window.AndroidBridge.scheduleReminders)) return;
+    if(!window.AndroidBridge) return;
+
     const anchor = await loadJSON('anchor', { text: '' });
-    const settings = await loadJSON('reminder-settings', { frequencyMinutes: 120, startTime: '07:00', endTime: '22:00' });
-    window.AndroidBridge.scheduleReminders(anchor.text || '', settings.frequencyMinutes, settings.startTime, settings.endTime);
+    const settings = await loadJSON('reminder-settings', reminderSettingsDefaults());
+    const mode = settings.scheduleMode === 'custom' ? 'custom' : 'interval';
+
+    if(mode === 'custom'){
+      if(!window.AndroidBridge.scheduleCustomReminders) return;
+
+      const times = normaliseCustomTimes(settings.customTimes);
+      window.AndroidBridge.scheduleCustomReminders(
+        anchor.text || '',
+        times.join(',')
+      );
+      return;
+    }
+
+    if(!window.AndroidBridge.scheduleReminders) return;
+
+    window.AndroidBridge.scheduleReminders(
+      anchor.text || '',
+      settings.frequencyMinutes || 120,
+      settings.startTime || '07:00',
+      settings.endTime || '22:00'
+    );
+  }
+
+  scheduleModeChips.forEach(chip => {
+    chip.onclick = async () => {
+      const mode = chip.dataset.scheduleMode === 'custom' ? 'custom' : 'interval';
+      const settings = await loadJSON('reminder-settings', reminderSettingsDefaults());
+
+      settings.scheduleMode = mode;
+
+      if(mode === 'custom'){
+        settings.customTimes = normaliseCustomTimes(
+          settings.customTimes && settings.customTimes.length
+            ? settings.customTimes
+            : readCustomTimesFromUI()
+        );
+
+        renderCustomTimes(settings.customTimes);
+      }
+
+      await saveJSON('reminder-settings', settings);
+      updateScheduleModeUI(mode);
+      await scheduleNativeReminders();
+    };
+  });
+
+  if(addCustomTimeButton){
+    addCustomTimeButton.onclick = async () => {
+      if(!customTimeList) return;
+
+      const rows = customTimeList.querySelectorAll('.custom-time-row');
+      if(rows.length >= 12) return;
+
+      const currentTimes = readCustomTimesFromUI();
+      let newTime = '07:00';
+
+      if(currentTimes.length){
+        const last = currentTimes[currentTimes.length - 1];
+        const parts = last.split(':').map(Number);
+        const nextMinutes = ((parts[0] * 60 + parts[1] + 180) % (24 * 60));
+        newTime =
+          String(Math.floor(nextMinutes / 60)).padStart(2, '0') + ':' +
+          String(nextMinutes % 60).padStart(2, '0');
+      }
+
+      customTimeList.insertAdjacentHTML('beforeend', customTimeRowHTML(newTime));
+      await saveCustomTimesFromUI();
+    };
+  }
+
+  if(customTimeList){
+    customTimeList.addEventListener('change', async event => {
+      if(!event.target.classList.contains('custom-time-input')) return;
+      await saveCustomTimesFromUI();
+    });
+
+    customTimeList.addEventListener('click', async event => {
+      const removeButton = event.target.closest('.custom-time-remove');
+      if(!removeButton) return;
+
+      const rows = customTimeList.querySelectorAll('.custom-time-row');
+
+      if(rows.length <= 1){
+        return;
+      }
+
+      const row = removeButton.closest('.custom-time-row');
+      if(row) row.remove();
+
+      await saveCustomTimesFromUI();
+    });
   }
 
   freqChips.forEach(chip => {
@@ -4245,17 +4535,17 @@ if (batterySettingsButton) {
     if(anchorReference) anchorReference.value = anchor.reference || '';
     refreshButtons();
 
-    const settings = await loadJSON('reminder-settings', {
-      frequencyMinutes: 120,
-      startTime: '07:00',
-      endTime: '22:00',
-      verseMode: 'current'
-    });
+    const settings = await loadJSON('reminder-settings', reminderSettingsDefaults());
+
+    settings.scheduleMode = settings.scheduleMode === 'custom' ? 'custom' : 'interval';
+    settings.customTimes = normaliseCustomTimes(settings.customTimes);
 
     freqChips.forEach(c => c.classList.toggle('active', parseInt(c.dataset.min,10) === settings.frequencyMinutes));
-    document.getElementById('start-time').value = settings.startTime;
-    document.getElementById('end-time').value = settings.endTime;
+    document.getElementById('start-time').value = settings.startTime || '07:00';
+    document.getElementById('end-time').value = settings.endTime || '22:00';
 
+    renderCustomTimes(settings.customTimes);
+    updateScheduleModeUI(settings.scheduleMode);
     updateVerseSourceUI(settings.verseMode || 'current');
     await syncReminderRotation();
 

@@ -14,6 +14,8 @@ public final class ReminderScheduler {
     private static final String KEY_FREQ = "freq";
     private static final String KEY_START = "start";
     private static final String KEY_END = "end";
+    private static final String KEY_MODE = "schedule_mode";
+    private static final String KEY_CUSTOM_TIMES = "custom_times";
     private static final int REQUEST_CODE = 8701;
 
     private ReminderScheduler() {}
@@ -24,7 +26,20 @@ public final class ReminderScheduler {
             .putInt(KEY_FREQ, Math.max(10, frequency))
             .putString(KEY_START, start == null ? "07:00" : start)
             .putString(KEY_END, end == null ? "22:00" : end)
+            .putString(KEY_MODE, "interval")
             .apply();
+        scheduleNext(context);
+    }
+
+    public static void saveCustomTimesAndSchedule(Context context, String text, String customTimes) {
+        android.content.SharedPreferences p = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+
+        p.edit()
+            .putString(KEY_TEXT, text == null ? "" : text.trim())
+            .putString(KEY_MODE, "custom")
+            .putString(KEY_CUSTOM_TIMES, customTimes == null ? "" : customTimes.trim())
+            .apply();
+
         scheduleNext(context);
     }
 
@@ -46,11 +61,20 @@ public final class ReminderScheduler {
         String text = p.getString(KEY_TEXT, "");
         if (text == null || text.trim().isEmpty()) return;
 
-        Calendar next = findNext(
-            p.getInt(KEY_FREQ, 120),
-            p.getString(KEY_START, "07:00"),
-            p.getString(KEY_END, "22:00")
-        );
+        String mode = p.getString(KEY_MODE, "interval");
+
+        Calendar next;
+        if ("custom".equals(mode)) {
+            next = findNextCustom(
+                p.getString(KEY_CUSTOM_TIMES, "")
+            );
+        } else {
+            next = findNext(
+                p.getInt(KEY_FREQ, 120),
+                p.getString(KEY_START, "07:00"),
+                p.getString(KEY_END, "22:00")
+            );
+        }
         if (next == null) return;
 
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -87,6 +111,42 @@ public final class ReminderScheduler {
         } catch (Exception e) {
             return new int[]{7, 0};
         }
+    }
+
+    public static Calendar findNextCustom(String customTimes) {
+        if (customTimes == null || customTimes.trim().isEmpty()) return null;
+
+        Calendar now = Calendar.getInstance();
+        Calendar best = null;
+
+        String[] times = customTimes.split(",");
+
+        for (int day = 0; day < 2; day++) {
+            for (String raw : times) {
+                String value = raw == null ? "" : raw.trim();
+                if (value.isEmpty()) continue;
+
+                int[] time = hm(value);
+
+                Calendar candidate = Calendar.getInstance();
+                candidate.setTimeInMillis(now.getTimeInMillis());
+                candidate.add(Calendar.DAY_OF_YEAR, day);
+                candidate.set(Calendar.HOUR_OF_DAY, time[0]);
+                candidate.set(Calendar.MINUTE, time[1]);
+                candidate.set(Calendar.SECOND, 0);
+                candidate.set(Calendar.MILLISECOND, 0);
+
+                if (!candidate.after(now)) continue;
+
+                if (best == null || candidate.before(best)) {
+                    best = candidate;
+                }
+            }
+
+            if (best != null) return best;
+        }
+
+        return null;
     }
 
     public static Calendar findNext(int frequency, String start, String end) {
