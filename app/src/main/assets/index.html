@@ -3390,6 +3390,35 @@
     }
   }
 
+
+  /* ---- Samsung Hagah + bottom-nav layering fix ---- */
+
+  /*
+     Always center the responsive Hagah SVG inside its circle.
+     The existing responsive width/height rules may still resize it,
+     but it will remain concentric.
+  */
+  .med-rings svg{
+    top:50% !important;
+    left:50% !important;
+    transform:translate(-50%, -50%) rotate(-90deg) !important;
+    transform-origin:center center !important;
+  }
+
+  /*
+     Keep full-page Journal / History / Packs layers underneath
+     the permanent bottom navigation.
+  */
+  .panel-stage{
+    z-index:1;
+  }
+
+  nav.tabs{
+    position:relative;
+    z-index:50;
+    isolation:isolate;
+  }
+
 </style>
 
 </head>
@@ -3681,7 +3710,7 @@
       <div class="med-heading">Hagah</div>
       <div class="med-subtitle">Say it. Hear it. Let it sink in.</div>
       <div class="med-rings">
-        <svg width="230" height="230">
+        <svg width="230" height="230" viewBox="0 0 230 230" preserveAspectRatio="xMidYMid meet">
           <circle class="med-track" cx="115" cy="115" r="104"></circle>
           <circle class="med-bar" id="med-bar" cx="115" cy="115" r="104"></circle>
         </svg>

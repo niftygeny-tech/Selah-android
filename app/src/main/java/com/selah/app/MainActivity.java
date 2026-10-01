@@ -41,20 +41,81 @@ public class MainActivity extends Activity {
         NotificationHelper.createChannel(this);
     }
 
-    private WebView makeWebView() {
+    private android.view.View makeWebView() {
+
+        android.widget.FrameLayout root =
+            new android.widget.FrameLayout(this);
+
+        root.setBackgroundColor(0xFF1B1F52);
+
         webView = new WebView(this);
+
         webView.setBackgroundColor(0xFF1B1F52);
+
+        android.widget.FrameLayout.LayoutParams webParams =
+            new android.widget.FrameLayout.LayoutParams(
+                android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
+                android.widget.FrameLayout.LayoutParams.MATCH_PARENT
+            );
+
+        root.addView(webView, webParams);
+
+        // Android 15 / 16 edge-to-edge safe area.
+        // Resize the actual WebView so important UI stays below the
+        // status bar / display cutout and above the navigation bar.
+        if (Build.VERSION.SDK_INT >= 35) {
+
+            root.setOnApplyWindowInsetsListener((view, insets) -> {
+
+                android.graphics.Insets safeInsets = insets.getInsets(
+                    android.view.WindowInsets.Type.systemBars()
+                        | android.view.WindowInsets.Type.displayCutout()
+                );
+
+                android.widget.FrameLayout.LayoutParams lp =
+                    (android.widget.FrameLayout.LayoutParams)
+                        webView.getLayoutParams();
+
+                lp.setMargins(
+                    safeInsets.left,
+                    safeInsets.top,
+                    safeInsets.right,
+                    safeInsets.bottom
+                );
+
+                webView.setLayoutParams(lp);
+
+                return insets;
+            });
+
+            root.post(root::requestApplyInsets);
+        }
+
         WebSettings s = webView.getSettings();
+
         s.setJavaScriptEnabled(true);
+
         s.setDomStorageEnabled(true);
+
         s.setDatabaseEnabled(true);
+
         s.setAllowFileAccess(true);
+
         s.setAllowContentAccess(true);
+
         s.setMediaPlaybackRequiresUserGesture(false);
+
         webView.setWebViewClient(new WebViewClient());
-        webView.addJavascriptInterface(new AndroidBridge(this), "AndroidBridge");
+
+        webView.addJavascriptInterface(
+            new AndroidBridge(this),
+            "AndroidBridge"
+        );
+
         webView.loadUrl("file:///android_asset/index.html");
-        return webView;
+
+        return root;
+
     }
 
     public class AndroidBridge {
