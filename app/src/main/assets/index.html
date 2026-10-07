@@ -3425,12 +3425,215 @@
     isolation:isolate;
   }
 
+
+  /* ---- Home Settings entry ---- */
+  #home-header{
+    position:relative;
+  }
+
+  .settings-btn{
+    position:absolute;
+    top:0;
+    right:0;
+    width:40px;
+    height:40px;
+    border:0;
+    border-radius:14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:0;
+    background:rgba(255,255,255,.34);
+    color:var(--muted);
+    cursor:pointer;
+    box-shadow:
+      inset 1px 1px 0 rgba(255,255,255,.55),
+      3px 4px 10px rgba(75,87,132,.08);
+    transition:transform .18s ease, color .18s ease, background .18s ease;
+  }
+
+  .settings-btn svg{
+    width:20px;
+    height:20px;
+  }
+
+  .settings-btn:active{
+    transform:scale(.94);
+  }
+
+  .settings-btn:hover{
+    color:var(--accent);
+    background:rgba(255,255,255,.5);
+  }
+
+
+  /* ---- Settings screen ---- */
+  .settings-screen{
+    display:none;
+    position:absolute;
+    inset:0;
+    z-index:60;
+    overflow-y:auto;
+    padding:2px 2px 40px;
+    background:var(--bg);
+  }
+
+  .settings-screen.active{
+    display:block;
+  }
+
+  .settings-inner{
+    padding:2px 2px 24px;
+  }
+
+  .settings-back{
+    border:none;
+    background:transparent;
+    color:var(--accent);
+    font:600 .76rem 'IBM Plex Mono',monospace;
+    padding:8px 2px 14px;
+    cursor:pointer;
+  }
+
+  .settings-head{
+    margin-bottom:20px;
+  }
+
+  .settings-title{
+    font-family:'Fraunces',serif;
+    font-size:1.8rem;
+    font-weight:600;
+    color:var(--ink-strong);
+  }
+
+  .settings-subtitle{
+    margin-top:4px;
+    font-size:.74rem;
+    line-height:1.45;
+    color:var(--muted);
+  }
+
+  .settings-group{
+    margin-bottom:20px;
+  }
+
+  .settings-section-label{
+    margin:0 4px 8px;
+    color:var(--muted);
+    font:600 .64rem 'IBM Plex Mono',monospace;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+  }
+
+  .settings-row{
+    width:100%;
+    min-height:68px;
+    border:none;
+    border-radius:18px;
+    padding:13px 14px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    text-align:left;
+    font:inherit;
+    color:var(--ink);
+    background:var(--surface);
+    box-shadow:
+      5px 5px 12px rgba(75,87,132,.11),
+      -5px -5px 12px rgba(255,255,255,.72);
+    cursor:pointer;
+    margin-bottom:9px;
+  }
+
+  .settings-row:last-child{
+    margin-bottom:0;
+  }
+
+  .settings-row:active{
+    transform:scale(.99);
+  }
+
+  .settings-row-copy{
+    min-width:0;
+    flex:1;
+  }
+
+  .settings-row-title{
+    font-family:'Sora',sans-serif;
+    font-size:.76rem;
+    font-weight:700;
+    color:var(--ink-strong);
+  }
+
+  .settings-row-subtitle{
+    margin-top:4px;
+    font-size:.68rem;
+    line-height:1.45;
+    color:var(--muted);
+  }
+
+  .settings-row-arrow{
+    flex:0 0 auto;
+    color:var(--accent);
+    font-size:1.45rem;
+    line-height:1;
+    font-weight:300;
+  }
+
+  .settings-info-card{
+    border-radius:20px;
+    padding:17px 16px;
+    background:var(--surface);
+    box-shadow:
+      5px 5px 12px rgba(75,87,132,.11),
+      -5px -5px 12px rgba(255,255,255,.72);
+  }
+
+  .settings-info-brand{
+    font-family:'Fraunces',serif;
+    font-size:1.35rem;
+    font-weight:600;
+    color:var(--ink-strong);
+  }
+
+  .settings-info-tagline{
+    margin-top:2px;
+    color:var(--accent);
+    font:600 .67rem 'IBM Plex Mono',monospace;
+    letter-spacing:.04em;
+  }
+
+  .settings-info-copy{
+    margin-top:11px;
+    font-size:.7rem;
+    line-height:1.55;
+    color:var(--muted);
+  }
+
+  .settings-info-version{
+    margin-top:13px;
+    color:var(--ink);
+    font:600 .64rem 'IBM Plex Mono',monospace;
+  }
+
+  .settings-row:focus-visible,
+  .settings-back:focus-visible{
+    outline:2px solid var(--accent);
+    outline-offset:2px;
+  }
+
 </style>
 
 </head>
 <body>
 <div class="app">
   <header id="home-header">
+    <button class="settings-btn" id="settings-btn" type="button" aria-label="Open Settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6Z"/>
+        <path d="M19.2 13.2a7.6 7.6 0 0 0 0-2.4l1.6-1.2-1.8-3.1-1.9.7a7.7 7.7 0 0 0-2.1-1.2L14.7 4h-3.6l-.3 2a7.7 7.7 0 0 0-2.1 1.2l-1.9-.7-1.8 3.1 1.6 1.2a7.6 7.6 0 0 0 0 2.4L5 14.4l1.8 3.1 1.9-.7a7.7 7.7 0 0 0 2.1 1.2l.3 2h3.6l.3-2a7.7 7.7 0 0 0 2.1-1.2l1.9.7 1.8-3.1-1.6-1.2Z"/>
+      </svg>
+    </button>
     <div class="mark">One Eight</div>
     <div class="sub">say it, hear it, keep it in front of you</div>
     <div class="goal-row">
@@ -3828,6 +4031,71 @@
 
     <div class="footnote">One Eight reminders are scheduled at the phone level and can alert you even when the app isn't open.</div>
   </section>
+
+  <!-- SETTINGS -->
+  <div class="settings-screen" id="settings-screen">
+    <div class="settings-inner">
+      <button class="settings-back" id="btn-close-settings" type="button">← Back</button>
+
+      <div class="settings-head">
+        <div class="settings-title">Settings</div>
+        <div class="settings-subtitle">Keep One Eight working the way you want.</div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-section-label">Reminders</div>
+
+        <button class="settings-row" id="settings-reminders" type="button">
+          <div class="settings-row-copy">
+            <div class="settings-row-title">Reminder settings</div>
+            <div class="settings-row-subtitle">Choose when One Eight reminds you and what it reminds you of.</div>
+          </div>
+          <span class="settings-row-arrow" aria-hidden="true">›</span>
+        </button>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-section-label">Reliability</div>
+
+        <button class="settings-row" id="settings-battery" type="button">
+          <div class="settings-row-copy">
+            <div class="settings-row-title">Battery settings</div>
+            <div class="settings-row-subtitle">Help One Eight stay reliable when running in the background.</div>
+          </div>
+          <span class="settings-row-arrow" aria-hidden="true">›</span>
+        </button>
+
+        <button class="settings-row" id="settings-exact-alarm" type="button">
+          <div class="settings-row-copy">
+            <div class="settings-row-title">Exact alarms</div>
+            <div class="settings-row-subtitle">Allow precise reminder times on supported Android versions.</div>
+          </div>
+          <span class="settings-row-arrow" aria-hidden="true">›</span>
+        </button>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-section-label">About One Eight</div>
+
+        <div class="settings-info-card">
+          <div class="settings-info-brand">One Eight</div>
+          <div class="settings-info-tagline">Read. Meditate. Live.</div>
+          <div class="settings-info-copy">Inspired by Joshua 1:8 — keeping God's Word before you throughout the day.</div>
+          <div class="settings-info-version">Version 1.0</div>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-section-label">Privacy</div>
+
+        <div class="settings-info-card">
+          <div class="settings-info-copy">
+            One Eight uses on-device app storage for your saved verses, journal reflections, meditation history and reminder preferences.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   </main>
 </div>
 
@@ -4585,6 +4853,63 @@
 
   function closePacksScreen(){
     switchTab('anchor', true);
+  }
+
+  const settingsScreen = document.getElementById('settings-screen');
+  const settingsBtn = document.getElementById('settings-btn');
+  const closeSettingsBtn = document.getElementById('btn-close-settings');
+
+  function openSettings(){
+    if(settingsScreen){
+      settingsScreen.classList.add('active');
+    }
+  }
+
+  function closeSettings(){
+    if(settingsScreen){
+      settingsScreen.classList.remove('active');
+    }
+  }
+
+  const settingsRemindersBtn = document.getElementById('settings-reminders');
+  const settingsBatteryBtn = document.getElementById('settings-battery');
+  const settingsExactAlarmBtn = document.getElementById('settings-exact-alarm');
+
+  if(settingsRemindersBtn){
+    settingsRemindersBtn.onclick = () => {
+      closeSettings();
+      switchTab('remind', true);
+    };
+  }
+
+  if(settingsBatteryBtn){
+    settingsBatteryBtn.onclick = () => {
+      closeSettings();
+      if(window.AndroidBridge && window.AndroidBridge.openBatterySettings){
+        window.AndroidBridge.openBatterySettings();
+      } else {
+        alert('Open One Eight in the Android app to check battery settings.');
+      }
+    };
+  }
+
+  if(settingsExactAlarmBtn){
+    settingsExactAlarmBtn.onclick = () => {
+      closeSettings();
+      if(window.AndroidBridge && window.AndroidBridge.openExactAlarmSettings){
+        window.AndroidBridge.openExactAlarmSettings();
+      } else {
+        alert('Open One Eight in the Android app to manage exact alarms.');
+      }
+    };
+  }
+
+  if(settingsBtn){
+    settingsBtn.onclick = openSettings;
+  }
+
+  if(closeSettingsBtn){
+    closeSettingsBtn.onclick = closeSettings;
   }
 
   if(openPacksBtn){

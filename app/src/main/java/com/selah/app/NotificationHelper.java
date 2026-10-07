@@ -8,7 +8,7 @@ import android.net.Uri;
 import android.os.Build;
 
 public final class NotificationHelper {
-    public static final String CHANNEL_ID = "one_eight_reminders_v2";
+    public static final String CHANNEL_ID = "one_eight_reminders_v3";
     private NotificationHelper() {}
 
     public static void createChannel(Context context) {

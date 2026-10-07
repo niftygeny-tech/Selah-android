@@ -173,6 +173,38 @@ public class MainActivity extends Activity {
         }
 
         @JavascriptInterface
+        public void openExactAlarmSettings() {
+            runOnUiThread(() -> {
+                if (Build.VERSION.SDK_INT >= 31) {
+                    try {
+                        startActivity(new Intent(
+                            Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM,
+                            Uri.parse("package:" + getPackageName())
+                        ));
+                    } catch (Exception ignored) {
+                        try {
+                            Intent samsungIntent = new Intent();
+                            samsungIntent.setComponent(new android.content.ComponentName(
+                                "com.android.settings",
+                                "com.android.settings.Settings$AlarmsAndRemindersAppActivity"
+                            ));
+                            samsungIntent.setData(Uri.parse("package:" + getPackageName()));
+                            startActivity(samsungIntent);
+                        } catch (Exception ignoredAgain) {
+                            MainActivity.this.openBatterySettings();
+                        }
+                    }
+                } else {
+                    new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("Exact alarms")
+                        .setMessage("A separate exact-alarm permission is not required on this Android version. One Eight can schedule your reminders directly.")
+                        .setPositiveButton("OK", null)
+                        .show();
+                }
+            });
+        }
+
+        @JavascriptInterface
         public void speak(String text) {
             runOnUiThread(() -> {
                 if (textToSpeech == null || !ttsReady || text == null || text.trim().isEmpty()) {
