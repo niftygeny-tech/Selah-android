@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -14,6 +15,10 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.util.Base64;
+import androidx.core.content.FileProvider;
+import java.io.File;
+import java.io.FileOutputStream;
 
 import android.app.Activity;
 import android.speech.tts.TextToSpeech;
@@ -184,6 +189,73 @@ public class MainActivity extends Activity {
             runOnUiThread(() -> {
                 if (textToSpeech != null) {
                     textToSpeech.stop();
+                }
+            });
+        }
+
+        @JavascriptInterface
+        public void shareCard(String base64Png) {
+            runOnUiThread(() -> {
+                if (base64Png == null || base64Png.trim().isEmpty()) {
+                    return;
+                }
+
+                try {
+                    String cleanBase64 = base64Png.trim();
+                    int commaIndex = cleanBase64.indexOf(',');
+                    if (commaIndex >= 0) {
+                        cleanBase64 = cleanBase64.substring(commaIndex + 1);
+                    }
+
+                    byte[] pngBytes = Base64.decode(
+                        cleanBase64,
+                        Base64.DEFAULT
+                    );
+
+                    File shareDir = new File(
+                        context.getCacheDir(),
+                        "share_cards"
+                    );
+
+                    if (!shareDir.exists() && !shareDir.mkdirs()) {
+                        return;
+                    }
+
+                    File shareFile = new File(
+                        shareDir,
+                        "one-eight-scripture-card.png"
+                    );
+
+                    try (FileOutputStream output =
+                             new FileOutputStream(shareFile)) {
+                        output.write(pngBytes);
+                        output.flush();
+                    }
+
+                    Uri uri = FileProvider.getUriForFile(
+                        context,
+                        context.getPackageName() + ".fileprovider",
+                        shareFile
+                    );
+
+                    Intent sendIntent = new Intent(Intent.ACTION_SEND);
+                    sendIntent.setType("image/png");
+                    sendIntent.putExtra(Intent.EXTRA_STREAM, uri);
+                    sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    sendIntent.setClipData(
+                        ClipData.newRawUri("One Eight Scripture Card", uri)
+                    );
+
+                    Intent chooser = Intent.createChooser(
+                        sendIntent,
+                        "Share Scripture Card"
+                    );
+                    chooser.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+                    context.startActivity(chooser);
+
+                } catch (Exception ignored) {
+                    // Sharing failed; keep the app running normally.
                 }
             });
         }

@@ -15,6 +15,10 @@ android {
     }
 }
 
+dependencies {
+    implementation("androidx.core:core:1.15.0")
+}
+
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(17))
