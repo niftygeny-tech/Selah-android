@@ -3716,6 +3716,79 @@
     margin-bottom:0 !important;
   }
 
+
+  /* ---- Journal visual cleanup v1 ---- */
+
+  /* Make Journal one continuous canvas with the same scenic language as Home. */
+  .journal-screen{
+    background-color:var(--bg) !important;
+    background-image:
+      linear-gradient(
+        to bottom,
+        rgba(235,237,250,1) 0%,
+        rgba(235,237,250,1) 38%,
+        rgba(235,237,250,.98) 48%,
+        rgba(235,237,250,.88) 57%,
+        rgba(235,237,250,.58) 66%,
+        rgba(235,237,250,.18) 76%,
+        rgba(235,237,250,0) 86%
+      ),
+      url("one_eight_home_wallpaper.png") !important;
+    background-position:center top, center center !important;
+    background-size:100% 100%, cover !important;
+    background-repeat:no-repeat !important;
+  }
+
+  /* Remove the large outer composer card; keep its inner controls/cards. */
+  .journal-compose{
+    background:transparent !important;
+    box-shadow:none !important;
+    border:none !important;
+  }
+
+  /* Let the delete backdrop extend through the full WebView viewport. */
+  .journal-delete-confirm{
+    position:fixed !important;
+    inset:0 !important;
+  }
+
+
+  
+  /* ---- Journal wallpaper continuation v1 ---- */
+
+  .journal-screen{
+    overflow:visible !important;
+  }
+
+  .journal-screen::after{
+    content:"";
+    position:absolute;
+    left:-20px;
+    right:-20px;
+    bottom:-170px;
+    height:340px;
+    z-index:0;
+    pointer-events:none;
+    background-image:
+      linear-gradient(
+        to bottom,
+        rgba(235,237,250,0) 0%,
+        rgba(235,237,250,0) 22%,
+        rgba(235,237,250,.06) 34%,
+        rgba(235,237,250,.18) 52%,
+        rgba(235,237,250,.02) 72%
+      ),
+      url("one_eight_home_wallpaper.png");
+    background-position:center top, center bottom;
+    background-size:100% 100%, cover;
+    background-repeat:no-repeat;
+  }
+
+  .journal-screen .journal-inner{
+    position:relative;
+    z-index:1;
+  }
+
 </style>
 
 </head>
