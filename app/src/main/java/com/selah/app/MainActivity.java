@@ -15,10 +15,21 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.WebChromeClient;
+import android.webkit.JsResult;
 import android.util.Base64;
 import androidx.core.content.FileProvider;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Iterator;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.speech.tts.TextToSpeech;
@@ -29,6 +40,9 @@ public class MainActivity extends Activity {
     private TextToSpeech textToSpeech;
     private boolean ttsReady = false;
     private static final int REQUEST_NOTIFICATIONS = 42;
+    private static final int REQUEST_CREATE_BACKUP = 7101;
+    private static final int REQUEST_OPEN_BACKUP = 7102;
+    private String pendingBackupJson;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +58,136 @@ public class MainActivity extends Activity {
         });
 
         NotificationHelper.createChannel(this);
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode != REQUEST_CREATE_BACKUP &&
+            requestCode != REQUEST_OPEN_BACKUP) {
+            return;
+        }
+
+        if (resultCode != RESULT_OK || data == null || data.getData() == null) {
+            if (requestCode == REQUEST_CREATE_BACKUP) pendingBackupJson = null;
+            return;
+        }
+
+        Uri selectedUri = data.getData();
+
+        if (requestCode == REQUEST_CREATE_BACKUP) {
+            String json = pendingBackupJson;
+            pendingBackupJson = null;
+
+            if (json == null || json.isEmpty()) {
+                android.widget.Toast.makeText(
+                    this, "Backup data is not ready.",
+                    android.widget.Toast.LENGTH_LONG
+                ).show();
+                return;
+            }
+
+            try (OutputStream output = getContentResolver().openOutputStream(selectedUri)) {
+                if (output == null) throw new IOException("Could not open selected file.");
+                output.write(json.getBytes(StandardCharsets.UTF_8));
+                output.flush();
+                android.widget.Toast.makeText(
+                    this, "One Eight backup saved.",
+                    android.widget.Toast.LENGTH_LONG
+                ).show();
+            } catch (Exception error) {
+                android.widget.Toast.makeText(
+                    this, "Could not save the backup file.",
+                    android.widget.Toast.LENGTH_LONG
+                ).show();
+            }
+            return;
+        }
+
+        if (requestCode == REQUEST_OPEN_BACKUP) {
+            try (InputStream input = getContentResolver().openInputStream(selectedUri);
+                 ByteArrayOutputStream bytes = new ByteArrayOutputStream()) {
+                if (input == null) throw new IOException("Could not open selected file.");
+
+                byte[] buffer = new byte[8192];
+                int count;
+                int total = 0;
+                final int maxBytes = 10 * 1024 * 1024;
+
+                while ((count = input.read(buffer)) != -1) {
+                    total += count;
+                    if (total > maxBytes) {
+                        throw new IOException("Backup file is too large.");
+                    }
+                    bytes.write(buffer, 0, count);
+                }
+
+                String contents = new String(
+                    bytes.toByteArray(), StandardCharsets.UTF_8
+                );
+                if (webView == null) {
+                    throw new IOException("One Eight is not ready to restore data.");
+                }
+
+                String script =
+                    "if(window.receiveBackupFile){window.receiveBackupFile(" +
+                    JSONObject.quote(contents) +
+                    ");}else{alert('Backup restore is not ready.');}";
+
+                webView.post(() -> webView.evaluateJavascript(script, null));
+            } catch (Exception error) {
+                android.widget.Toast.makeText(
+                    this,
+                    "Could not read that backup. Please choose a valid One Eight backup.",
+                    android.widget.Toast.LENGTH_LONG
+                ).show();
+            }
+        }
+    }
+
+    private void launchBackupSave(String json) {
+        pendingBackupJson = json;
+
+        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("application/json");
+
+        String date = new SimpleDateFormat("yyyy-MM-dd", Locale.US)
+            .format(new Date());
+        intent.putExtra(
+            Intent.EXTRA_TITLE, "one-eight-backup-" + date + ".json"
+        );
+
+        try {
+            startActivityForResult(intent, REQUEST_CREATE_BACKUP);
+        } catch (Exception error) {
+            pendingBackupJson = null;
+            android.widget.Toast.makeText(
+                this, "The file picker could not be opened.",
+                android.widget.Toast.LENGTH_LONG
+            ).show();
+        }
+    }
+
+    private void launchBackupOpen() {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("*/*");
+        intent.putExtra(
+            Intent.EXTRA_MIME_TYPES,
+            new String[]{"application/json", "text/json"}
+        );
+
+        try {
+            startActivityForResult(intent, REQUEST_OPEN_BACKUP);
+        } catch (Exception error) {
+            android.widget.Toast.makeText(
+                this, "The file picker could not be opened.",
+                android.widget.Toast.LENGTH_LONG
+            ).show();
+        }
     }
 
     private android.view.View makeWebView() {
@@ -111,6 +255,33 @@ public class MainActivity extends Activity {
         s.setMediaPlaybackRequiresUserGesture(false);
 
         webView.setWebViewClient(new WebViewClient());
+        webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
+                new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("One Eight")
+                    .setMessage(message)
+                    .setPositiveButton(android.R.string.ok,
+                        (dialog, which) -> result.confirm())
+                    .setOnCancelListener(dialog -> result.cancel())
+                    .show();
+                return true;
+            }
+
+            @Override
+            public boolean onJsConfirm(WebView view, String url, String message, JsResult result) {
+                new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("One Eight")
+                    .setMessage(message)
+                    .setPositiveButton("Continue",
+                        (dialog, which) -> result.confirm())
+                    .setNegativeButton("Cancel",
+                        (dialog, which) -> result.cancel())
+                    .setOnCancelListener(dialog -> result.cancel())
+                    .show();
+                return true;
+            }
+        });
 
         webView.addJavascriptInterface(
             new AndroidBridge(this),
@@ -223,6 +394,70 @@ public class MainActivity extends Activity {
                     textToSpeech.stop();
                 }
             });
+        }
+
+        @JavascriptInterface
+        public String getReminderBackupJson() {
+            try {
+                android.content.SharedPreferences preferences =
+                    context.getSharedPreferences("selah_reminders", Context.MODE_PRIVATE);
+                return new JSONObject(preferences.getAll()).toString();
+            } catch (Exception error) {
+                return "{}";
+            }
+        }
+
+        @JavascriptInterface
+        public void exportBackup(String backupJson) {
+            if (backupJson == null || backupJson.trim().isEmpty()) return;
+            runOnUiThread(() -> launchBackupSave(backupJson));
+        }
+
+        @JavascriptInterface
+        public void pickBackupFile() {
+            runOnUiThread(() -> launchBackupOpen());
+        }
+
+        @JavascriptInterface
+        public boolean restoreReminderSettings(String json) {
+            if (json == null || json.trim().isEmpty()) return false;
+
+            try {
+                JSONObject source = new JSONObject(json);
+                android.content.SharedPreferences preferences =
+                    context.getSharedPreferences("selah_reminders", Context.MODE_PRIVATE);
+                android.content.SharedPreferences.Editor editor =
+                    preferences.edit().clear();
+
+                Iterator<String> keys = source.keys();
+                while (keys.hasNext()) {
+                    String key = keys.next();
+                    Object value = source.get(key);
+
+                    if (value == null || value == JSONObject.NULL) continue;
+
+                    if (value instanceof String) {
+                        editor.putString(key, (String) value);
+                    } else if (value instanceof Boolean) {
+                        editor.putBoolean(key, (Boolean) value);
+                    } else if (value instanceof Number) {
+                        long number = ((Number) value).longValue();
+                        if (number >= Integer.MIN_VALUE && number <= Integer.MAX_VALUE) {
+                            editor.putInt(key, (int) number);
+                        } else {
+                            editor.putLong(key, number);
+                        }
+                    } else {
+                        return false;
+                    }
+                }
+
+                editor.apply();
+                ReminderScheduler.scheduleNext(context);
+                return true;
+            } catch (Exception error) {
+                return false;
+            }
         }
 
         @JavascriptInterface

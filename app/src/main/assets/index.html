@@ -4242,6 +4242,26 @@
       </div>
 
       <div class="settings-group">
+        <div class="settings-section-label">Data &amp; Privacy</div>
+
+        <button class="settings-row" id="settings-backup" type="button">
+          <div class="settings-row-copy">
+            <div class="settings-row-title">Back Up My Data</div>
+            <div class="settings-row-subtitle">Save your scriptures, reflections, meditation history and preferences to a file.</div>
+          </div>
+          <span class="settings-row-arrow" aria-hidden="true">›</span>
+        </button>
+
+        <button class="settings-row" id="settings-restore" type="button">
+          <div class="settings-row-copy">
+            <div class="settings-row-title">Restore From Backup</div>
+            <div class="settings-row-subtitle">Restore your One Eight data from a backup file.</div>
+          </div>
+          <span class="settings-row-arrow" aria-hidden="true">›</span>
+        </button>
+      </div>
+
+      <div class="settings-group">
         <div class="settings-section-label">About One Eight</div>
 
         <div class="settings-info-card">
@@ -5070,6 +5090,180 @@
       }
     };
   }
+
+
+  // ---------- Backup & Restore ----------
+  const settingsBackupBtn = document.getElementById('settings-backup');
+  const settingsRestoreBtn = document.getElementById('settings-restore');
+
+  if(settingsBackupBtn){
+    settingsBackupBtn.onclick = () => {
+      if(!window.AndroidBridge ||
+         !window.AndroidBridge.getReminderBackupJson ||
+         !window.AndroidBridge.exportBackup){
+        alert('Backup is available in the installed One Eight app.');
+        return;
+      }
+
+      try{
+        const data = {};
+
+        for(let i = 0; i < localStorage.length; i++){
+          const key = localStorage.key(i);
+          if(!key) continue;
+
+          const raw = localStorage.getItem(key);
+          if(raw === null) continue;
+
+          data[key] = JSON.parse(raw);
+        }
+
+        const nativeRaw = window.AndroidBridge.getReminderBackupJson();
+        const reminderPreferences = JSON.parse(nativeRaw || '{}');
+
+        if(!reminderPreferences ||
+           typeof reminderPreferences !== 'object' ||
+           Array.isArray(reminderPreferences)){
+          throw new Error('Invalid native reminder preferences.');
+        }
+
+        const backup = {
+          format: 'one-eight-backup',
+          backupVersion: 1,
+          appName: 'One Eight',
+          appVersion: '1.0',
+          createdAt: new Date().toISOString(),
+          data: data,
+          native: {
+            reminderPreferences: reminderPreferences
+          }
+        };
+
+        window.AndroidBridge.exportBackup(JSON.stringify(backup));
+      }catch(error){
+        alert('One Eight could not prepare the backup. Your data has not been changed.');
+      }
+    };
+  }
+
+  if(settingsRestoreBtn){
+    settingsRestoreBtn.onclick = () => {
+      if(!window.AndroidBridge || !window.AndroidBridge.pickBackupFile){
+        alert('Restore is available in the installed One Eight app.');
+        return;
+      }
+      window.AndroidBridge.pickBackupFile();
+    };
+  }
+
+  window.receiveBackupFile = function(contents){
+    let backup;
+
+    try{
+      if(typeof contents !== 'string' || contents.length > 10 * 1024 * 1024){
+        throw new Error('Invalid backup size.');
+      }
+
+      backup = JSON.parse(contents);
+
+      if(!backup ||
+         backup.format !== 'one-eight-backup' ||
+         backup.backupVersion !== 1 ||
+         !backup.data ||
+         typeof backup.data !== 'object' ||
+         Array.isArray(backup.data) ||
+         !backup.native ||
+         !backup.native.reminderPreferences ||
+         typeof backup.native.reminderPreferences !== 'object' ||
+         Array.isArray(backup.native.reminderPreferences)){
+        throw new Error('Unsupported or incomplete backup.');
+      }
+
+      for(const key of Object.keys(backup.data)){
+        if(!key || key.length > 500){
+          throw new Error('Invalid storage key.');
+        }
+        if(typeof JSON.stringify(backup.data[key]) !== 'string'){
+          throw new Error('Invalid backup data.');
+        }
+      }
+
+      for(const value of Object.values(backup.native.reminderPreferences)){
+        if(value !== null &&
+           typeof value !== 'string' &&
+           typeof value !== 'boolean' &&
+           !(typeof value === 'number' && Number.isFinite(value))){
+          throw new Error('Invalid reminder preference.');
+        }
+      }
+    }catch(error){
+      alert('This file is not a valid, supported One Eight backup. Nothing was changed.');
+      return;
+    }
+
+    const dateLabel = backup.createdAt
+      ? '\nBackup date: ' + backup.createdAt
+      : '';
+
+    const confirmed = confirm(
+      'Restore this One Eight backup?' + dateLabel +
+      '\n\nThis will replace the current data on this device, including saved scriptures, journal entries, meditation history and preferences. Export a backup of your current data first if you may need it later.'
+    );
+
+    if(!confirmed) return;
+
+    if(!window.AndroidBridge ||
+       !window.AndroidBridge.getReminderBackupJson ||
+       !window.AndroidBridge.restoreReminderSettings){
+      alert('The native restore service is unavailable. Your data has not been changed.');
+      return;
+    }
+
+    const previousStorage = {};
+    const previousNativeRaw = window.AndroidBridge.getReminderBackupJson();
+
+    for(let i = 0; i < localStorage.length; i++){
+      const key = localStorage.key(i);
+      if(key !== null){
+        previousStorage[key] = localStorage.getItem(key);
+      }
+    }
+
+    try{
+      // Apply the selected backup's local data.
+      localStorage.clear();
+
+      for(const [key, value] of Object.entries(backup.data)){
+        localStorage.setItem(key, JSON.stringify(value));
+      }
+
+      // Restore native reminder preferences and reschedule reminders.
+      const nativeRestored = window.AndroidBridge.restoreReminderSettings(
+        JSON.stringify(backup.native.reminderPreferences)
+      );
+
+      if(nativeRestored !== true){
+        throw new Error('Native reminder settings could not be restored.');
+      }
+
+      alert('Backup restored successfully. One Eight will now reload.');
+      window.location.reload();
+    }catch(error){
+      // Best-effort rollback to the data present before the restore.
+      try{
+        localStorage.clear();
+        for(const [key, raw] of Object.entries(previousStorage)){
+          if(raw !== null) localStorage.setItem(key, raw);
+        }
+
+        window.AndroidBridge.restoreReminderSettings(previousNativeRaw || '{}');
+      }catch(rollbackError){
+        // Inform the user below if recovery also fails.
+      }
+
+      alert('Restore could not be completed. One Eight attempted to return to the previous data. Please check your data before trying again.');
+    }
+  };
 
   if(settingsBtn){
     settingsBtn.onclick = openSettings;
